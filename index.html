@@ -15,7 +15,7 @@
  *  API 網址會喺同學登入時由後端自動傳過嚟，唔使填。
  * ========================================================= */
 window.APP_CONFIG = {
-  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycby2X3JBsLy71_4F8FzGOor01agAdvdi-8VRJJtyh6yLDLfvMSoIAIzfK5FPc1Ml4X5Y-A/exec'
+  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycbxPv5lOUmziIxdgW_qUVR3uDNJcQi_G3ybSChN_EyTnL_y9KC9VWQPIpXrl2_PX7CbzrQ/exec'
 };
 </script>
 <style>
@@ -451,7 +451,7 @@ async function aiCached(key,action,payload){
   if(MEM[key]) return MEM[key];
   const r = await api(action,payload); MEM[key]=r; return r;
 }
-function taskPayload(t){return {id:t.id,title:t.title||t.label,intro:t.intro,text:t.text,task:t.task,points:t.points};}
+function taskPayload(t){return {id:t.id,title:t.title||t.label,intro:t.intro,text:t.text,task:t.task,points:t.points,ir:t.ir};}
 function notes(tid){return DATA.notes[tid]||(DATA.notes[tid]={gd:{},ir:{}});}
 let _clip=null;
 async function speakWord(w){
