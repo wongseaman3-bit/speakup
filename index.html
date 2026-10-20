@@ -15,7 +15,7 @@
  *  API 網址會喺同學登入時由後端自動傳過嚟，唔使填。
  * ========================================================= */
 window.APP_CONFIG = {
-  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycbx_JT4llcftXiLICuBWuMeoTV7nP2UISftwUHIimy-oq8pXPQuJLrT7ZQKqjSU5Bj1qnQ/exec'
+  LOGIN_URL: '在這裡貼上_登入部署網址_/exec'
 };
 </script>
 <style>
@@ -279,6 +279,7 @@ label.q small{font-weight:400;color:var(--muted)}
 .w:hover{background:var(--gold-soft)}
 .w.act,.wd.act{background:#ffd36b!important;color:#1b1206!important}
 .wpop{width:320px;max-width:calc(100vw - 24px)}
+.wpop .w{font:inherit;font-size:inherit;font-weight:inherit}
 .wpop .w1{font-family:Fraunces,serif;font-size:24px;font-weight:700;line-height:1.2}
 .wpop .ipa{color:var(--muted);font-size:14px;margin-top:2px}
 .wdef{margin-top:8px;font-size:14.5px}
@@ -1221,8 +1222,62 @@ function ww(text){ return String(text==null?'':text).split(/([A-Za-z][A-Za-z'’
 const POSZH={'n.':'名詞','v.':'動詞','adj.':'形容詞','adv.':'副詞','prep.':'介詞','conj.':'連詞','pron.':'代詞','det.':'限定詞','int.':'感嘆詞','phr.':'短語'};
 function ctxOf(el,word){
   const blk=el.closest('.script,.art,.tk,li,.bigq,h3,.seg,.ktext,.ex,.gq,.dir')||el.parentNode;
-  const txt=(blk&&blk.textContent||'').replace(/\s+/g,' ').trim();
+  const txt=(blk&&(blk.innerText||blk.textContent)||'').replace(/\s+/g,' ').trim();
   const sents=txt.split(/(?<=[.!?])\s+/); return (sents.find(s=>s.toLowerCase().includes(word.toLowerCase()))||txt).slice(0,300);
+}
+/* ===== 通用翻譯（Google 翻譯，非 AI）：瀏覽器直接連線 → MyMemory → 後端 LanguageApp ===== */
+function hashS(t){ let h=5381; for(let i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))|0; return (h>>>0).toString(36)+t.length; }
+function tfetch(url,opt,ms){ const c=new AbortController(), id=setTimeout(()=>c.abort(),ms||8000);
+  return fetch(url,Object.assign({signal:c.signal},opt||{})).finally(()=>clearTimeout(id)); }
+function chunks(text,max){ const out=[]; let cur='';
+  for(const s of String(text).split(/(?<=[.!?;:])\s+|\n+/)){ if(!s) continue;
+    if((cur+' '+s).length>max&&cur){ out.push(cur); cur=''; }
+    if(s.length>max){ for(let i=0;i<s.length;i+=max) out.push(s.slice(i,i+max)); } else cur=cur?cur+' '+s:s; }
+  if(cur) out.push(cur); return out; }
+const GT='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-TW&dj=1';
+async function gtOne(t){
+  const r=await tfetch(GT+'&dt=t&q='+encodeURIComponent(t),{},8000); if(!r.ok) throw new Error('GT '+r.status);
+  const j=await r.json(); return (j.sentences||[]).map(x=>x.trans||'').join(''); }
+async function mmOne(t){
+  const r=await tfetch('https://api.mymemory.translated.net/get?langpair=en|zh-TW&q='+encodeURIComponent(t),{},10000);
+  const j=await r.json(); if(+j.responseStatus!==200) throw new Error('MM '+j.responseStatus); return j.responseData.translatedText||''; }
+async function gTranslate(text){
+  text=String(text||'').replace(/\s+/g,' ').trim(); if(!text) return '';
+  const ck='gt_'+hashS(text), c=LS.get(ck,null); if(c) return c;
+  let zh='';
+  try{ zh=(await Promise.all(chunks(text,1500).map(gtOne))).join(''); }
+  catch(e1){ try{ zh=(await Promise.all(chunks(text,450).map(mmOne))).join(''); }
+    catch(e2){ zh=(await api('gtranslate',{text})).zh||''; } }
+  if(!zh) throw new Error('翻譯服務暫時未能使用，請稍後再試');
+  try{ LS.set(ck,zh); }catch(e){} return zh;
+}
+/* 字典：Google 翻譯字典模式（詞性 + 多個中文意思）*/
+const GPOS={noun:'n.',verb:'v.',adjective:'adj.',adverb:'adv.',preposition:'prep.',conjunction:'conj.',pronoun:'pron.',interjection:'int.',determiner:'det.',article:'det.',abbreviation:'abbr.',phrase:'phr.',prefix:'prefix',suffix:'suffix'};
+POSZH['abbr.']='縮寫';
+async function gDict(w){
+  const k='gd_'+w.toLowerCase(), c=LS.get(k,null); if(c) return c;
+  let d=null;
+  try{
+    const r=await tfetch(GT+'&dt=t&dt=bd&dt=rm&q='+encodeURIComponent(w),{},7000); const j=await r.json();
+    d={zh:(j.sentences||[]).map(x=>x.trans||'').join('').trim(),
+       defs:(j.dict||[]).map(x=>({pos:GPOS[x.pos]||x.pos||'',terms:(x.terms||[]).slice(0,5)})).slice(0,4)};
+  }catch(e){ try{ d={zh:await mmOne(w),defs:[]}; }catch(e2){} }
+  if(d&&d.zh){ try{LS.set(k,d);}catch(e){} return d; }
+  return null;
+}
+/* 發音：已有真人發音即播；否則 1.2 秒內未有就先播字典真人錄音／預設女聲，背景繼續製作真人發音 */
+async function sayWord(w,note){
+  const k=ttsKey(w); if(_clip){try{_clip.pause()}catch(e){}}
+  if(TTS.url[k]){ _clip=new Audio(TTS.url[k]); return _clip.play().catch(()=>{}); }
+  let done=false;
+  const real=getReal(w,false).then(u=>{ if(!done&&u){ done=true; _clip=new Audio(u); _clip.play().catch(()=>{}); } return u; }).catch(()=>null);
+  await new Promise(r=>setTimeout(r,1200));
+  if(done) return;
+  done=true;
+  const q=await Promise.race([quickDict(w),new Promise(r=>setTimeout(()=>r(null),300))]);
+  if(q&&q.audio){ _clip=new Audio(q.audio); const ok=await _clip.play().then(()=>1).catch(()=>0); if(ok) return; }
+  speakBrowser(w);
+  real.then(u=>{ if(u&&note&&document.body.contains(note)) note.textContent='✅ 真人發音已準備好，再撳 🔊 就可以聽'; });
 }
 async function wordCard(el,raw,ctx,tip){
   document.querySelector('.pop')?.remove(); document.querySelectorAll('.w.act,.wd.act').forEach(x=>x.classList.remove('act'));
@@ -1231,56 +1286,53 @@ async function wordCard(el,raw,ctx,tip){
   const r=el.getBoundingClientRect(), p=document.createElement('div'); p.className='pop wpop';
   const small=window.innerWidth<560;
   if(small){ p.style.left='12px'; p.style.right='12px'; p.style.bottom='calc(16px + env(safe-area-inset-bottom))'; }
-  else { p.style.left=Math.min(window.innerWidth-340,Math.max(10,r.left-10))+'px'; p.style.top=(r.bottom+260>window.innerHeight?Math.max(10,r.top-250):r.bottom+8)+'px'; }
+  else { p.style.left=Math.min(window.innerWidth-340,Math.max(10,r.left-10))+'px'; p.style.top=(r.bottom+280>window.innerHeight?Math.max(10,r.top-270):r.bottom+8)+'px'; }
   p.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start"><div><div class="w1">${esc(w)}</div><div class="ipa" id="wipa"></div></div>
      <button class="ibtn" onclick="closeWord()">✕</button></div>
     ${tip?`<div class="note" style="margin:8px 0;font-size:13.5px;white-space:pre-line">${esc(tip)}</div>`:''}
     <div id="wdef" class="wdef"><span class="spin"></span> 查緊字典…</div>
-    <div class="row" style="margin-top:10px"><button class="btn sm" id="wsay">🔊 真人發音</button><button class="btn sm pri" id="wadd">＋ 加入我的生字</button></div>
+    <div id="wex"></div>
+    <div class="row" style="margin-top:10px"><button class="btn sm" id="wsay">🔊 發音</button><button class="btn sm pri" id="wadd">＋ 加入我的生字</button></div>
     <div id="wnote" class="muted" style="font-size:12px;margin-top:6px"></div>`;
   document.body.appendChild(p);
-  const say=$('#wsay'), add=$('#wadd');
-  const play=async()=>{
-    say.disabled=true; say.innerHTML='<span class="spin"></span> 載入真人發音';
-    try{ const url=await getReal(w,false); if(url){ if(_clip){try{_clip.pause()}catch(e){}} _clip=new Audio(url); await _clip.play().catch(()=>{}); $('#wnote').textContent=''; } }
-    catch(e){ speakBrowser(w); const n=$('#wnote'); if(n) n.textContent='⚠️ 真人發音暫時未能使用，今次用咗預設發音'; }
-    if(document.body.contains(say)){ say.disabled=false; say.innerHTML='🔊 真人發音'; }
-  };
-  say.onclick=play; play();
+  const say=$('#wsay'), add=$('#wadd'), note=$('#wnote');
+  say.onclick=()=>sayWord(w,note); sayWord(w,note);
   const have=()=>DATA.vocab.some(v=>v.word.toLowerCase()===w.toLowerCase());
   if(have()) add.textContent='✓ 已在我的生字';
-  let d={word:w.toLowerCase(),example:ctx||''}, aiDone=false;
-  // 即時字典（免費，冇中文）：先顯示音標同詞性
-  quickDict(w).then(q=>{ if(!q||aiDone||!document.body.contains(p)) return;
-    $('#wipa').textContent=q.ipa||'';
-    $('#wdef').innerHTML=`${q.pos.map(x=>`<span class="posc">${esc(x)} ${esc(POSZH[x]||'')}</span>`).join(' ')}<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(q.def||'')}</div><div class="muted" style="font-size:13px;margin-top:6px"><span class="spin"></span> 中文解釋載入中…</div>`;
-  });
-  const t0=Date.now(), slowT=setInterval(()=>{ const n=$('#wnote'); if(!aiDone&&n&&Date.now()-t0>12000) n.textContent='AI 繁忙，中文解釋需時較長（已等 '+Math.floor((Date.now()-t0)/1000)+' 秒）'; },1000);
-  try{ d=Object.assign(d,await aiCached('w2_'+w.toLowerCase(),'define',{word:w,context:ctx||''})); }catch(e){ d._err=e.message; }
-  aiDone=true; clearInterval(slowT); const wn=$('#wnote'); if(wn&&/AI 繁忙/.test(wn.textContent)) wn.textContent='';
+  let info={pos:'',zh:'',ipa:''};
+  quickDict(w).then(q=>{ if(!q||!document.body.contains(p)) return; info.ipa=q.ipa||''; $('#wipa').textContent=q.ipa||''; if(!info.pos&&q.pos[0]) info.pos=q.pos[0]; });
+  if(ctx) gTranslate(ctx).then(z=>{ const e=$('#wex'); if(e&&document.body.contains(p)) e.innerHTML=`<div style="margin-top:10px;padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.04);font-size:13.5px;line-height:1.5"><div>${ww(ctx)}</div><div class="muted" style="margin-top:3px">${esc(z)}</div></div>`; }).catch(()=>{});
+  const d=await gDict(w);
   if(!document.body.contains(p)) return;
-  const pos=String(d.pos||'').trim(), pz=d.pos_zh||POSZH[pos]||'';
-  $('#wipa').textContent=d.ipa||'';
-  const q=QD[w.toLowerCase()];
-  $('#wdef').innerHTML=d._err?`${q?`${q.pos.map(x=>`<span class="posc">${esc(x)} ${esc(POSZH[x]||'')}</span>`).join(' ')}<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(q.def||'')}</div>`:''}<div class="note" style="margin-top:8px;font-size:13px">⚠️ 中文解釋暫時未能載入：${esc(d._err)}</div>`:
-    `${pos?`<span class="posc">${esc(pos)}${pz?' '+esc(pz):''}</span>`:''}<div class="zh1">${esc(d.zh||'')}</div>${d.example?`<div class="ex">${ww(d.example)}</div>`:''}
-     ${d.word&&d.word.toLowerCase()!==w.toLowerCase()?`<div class="muted" style="font-size:12.5px;margin-top:4px">原形：<b>${esc(d.word)}</b></div>`:''}`;
+  if(d){
+    const rows=d.defs.filter(x=>x.terms.length);
+    info.zh=rows.length?rows.map(x=>x.terms.slice(0,3).join('、')).join('；'):d.zh;
+    if(rows[0]) info.pos=rows[0].pos;
+    $('#wdef').innerHTML=`<div class="zh1">${esc(d.zh)}</div>`+rows.map(x=>`<div style="margin-top:6px"><span class="posc">${esc(x.pos)}${POSZH[x.pos]?' '+esc(POSZH[x.pos]):''}</span> <span style="font-size:14.5px">${esc(x.terms.join('、'))}</span></div>`).join('');
+  }else{
+    // 翻譯服務連唔到先用 AI
+    $('#wdef').innerHTML='<span class="spin"></span> 載入中文解釋…';
+    try{ const a=await aiCached('w2_'+w.toLowerCase(),'define',{word:w,context:ctx||''});
+      info={pos:String(a.pos||'').trim(),zh:a.zh||'',ipa:a.ipa||info.ipa};
+      if(document.body.contains(p)) $('#wdef').innerHTML=`${info.pos?`<span class="posc">${esc(info.pos)} ${esc(POSZH[info.pos]||'')}</span>`:''}<div class="zh1">${esc(info.zh)}</div>`; }
+    catch(e){ if(document.body.contains(p)) $('#wdef').innerHTML=`<div class="note" style="font-size:13px">⚠️ 暫時未能取得中文解釋，請檢查網絡後再撳一次個字。</div>`; }
+  }
   add.onclick=()=>{
     if(have()) return toast('已在我的生字');
-    addVocab({word:d.word&&!d._err?d.word:w,pos:pos+(pz?' '+pz:''),zh:d.zh||'',example:d.example||ctx||'',ipa:d.ipa||''}); add.textContent='✓ 已加入';
+    addVocab({word:w.toLowerCase(),pos:info.pos+(POSZH[info.pos]?' '+POSZH[info.pos]:''),zh:info.zh,example:ctx||'',ipa:info.ipa}); add.textContent='✓ 已加入';
   };
 }
 const QD={};
 async function quickDict(w){
   const k=w.toLowerCase(); if(QD[k]!==undefined) return QD[k];
-  try{
-    const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(k)); if(!r.ok) return QD[k]=null;
+  return QD[k]=(async()=>{ try{
+    const r=await tfetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(k),{},5000); if(!r.ok) return null;
     const j=await r.json(), e=j[0]||{}, map={noun:'n.',verb:'v.',adjective:'adj.',adverb:'adv.',preposition:'prep.',conjunction:'conj.',pronoun:'pron.',interjection:'int.',determiner:'det.'};
     const pos=[...new Set((e.meanings||[]).map(m=>map[m.partOfSpeech]).filter(Boolean))].slice(0,3);
-    const ipa=e.phonetic||((e.phonetics||[]).find(x=>x.text)||{}).text||'';
-    const def=(((e.meanings||[])[0]||{}).definitions||[{}])[0].definition||'';
-    return QD[k]={pos,ipa,def};
-  }catch(x){ return QD[k]=null; }
+    const ph=e.phonetics||[], ipa=e.phonetic||(ph.find(x=>x.text)||{}).text||'';
+    const au=ph.filter(x=>x.audio); const audio=((au.find(x=>/-uk\.mp3/.test(x.audio))||au[0])||{}).audio||'';
+    return {pos,ipa,audio};
+  }catch(x){ return null; } })();
 }
 function closeWord(){ document.querySelector('.pop')?.remove(); document.querySelectorAll('.w.act,.wd.act').forEach(x=>x.classList.remove('act')); }
 document.addEventListener('click',e=>{
@@ -1296,8 +1348,8 @@ async function toggleTr(btn){
   const box=btn.closest('.trw'), out=box.querySelector('.trtext'), text=window._trT[+box.dataset.tr];
   if(out.dataset.ok){ out.hidden=!out.hidden; btn.textContent=out.hidden?'🀄 顯示中文翻譯':'🀄 隱藏中文翻譯'; return; }
   btn.disabled=true; btn.innerHTML='<span class="spin"></span> 翻譯中…'; out.hidden=false; out.innerHTML='';
-  try{ const r=await aiCached('tr_'+text.slice(0,60)+text.length,'translate',{text}); out.textContent=r.zh||''; out.dataset.ok=1; btn.textContent='🀄 隱藏中文翻譯'; }
-  catch(e){ out.innerHTML=errCard(e.message); btn.textContent='🀄 再試翻譯'; }
+  try{ out.textContent=await gTranslate(text); out.dataset.ok=1; btn.textContent='🀄 隱藏中文翻譯'; }
+  catch(e){ out.innerHTML=`<div class="note">⚠️ ${esc(e.message)}</div>`; btn.textContent='🀄 再試翻譯'; }
   btn.disabled=false;
 }
 

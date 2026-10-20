@@ -37,7 +37,7 @@ const TTS_SAFETY = 0.97;   // 用到免費額度 97% 就轉下一級，避免收
 /* ============ ① 登入頁（「登入部署」：執行身分＝我；存取＝網域內所有使用者）============ */
 function doGet(e) {
   if (e && e.parameter && e.parameter.status) return json_(status_());
-  if (e && e.parameter && e.parameter.ping) return json_({ ok: true, app: 'dse-speaking', version: 7, hasKey: getKeys_().length > 0, time: new Date() });
+  if (e && e.parameter && e.parameter.ping) return json_({ ok: true, app: 'dse-speaking', version: 8, hasKey: getKeys_().length > 0, time: new Date() });
   const email = (Session.getActiveUser().getEmail() || '').toLowerCase();
   if (!email) return msgPage_('未能識別帳戶', '請用學校 Google 帳戶登入瀏覽器，再重新打開此連結。');
   const stu = findStudent_(email);
@@ -105,6 +105,17 @@ function api_(email, action, p) {
         if (!t) throw new Error('冇文字');
         if (t.length > 4000) throw new Error('文字太長');
         r = cached_('tr_' + ttsId_(t), function () { return ai_('quick', [{ text: promptTranslate_(t) }], 0.2); });
+        break;
+      }
+      case 'gtranslate': {   // Google 翻譯（非 AI，免 Key）：前端直接翻譯失敗時嘅後備
+        const t = ttsNorm_(p.text);
+        if (!t) throw new Error('冇文字');
+        if (t.length > 8000) throw new Error('文字太長');
+        const ck = 'gt_' + ttsId_(t), c = CacheService.getScriptCache().get(ck);
+        if (c) { r = { zh: c }; break; }
+        const zh = LanguageApp.translate(t, 'en', 'zh-TW');
+        try { CacheService.getScriptCache().put(ck, zh, 21600); } catch (x) {}
+        r = { zh: zh };
         break;
       }
       case 'assess':
@@ -301,7 +312,7 @@ function status_() {
     });
   });
   const tts = {}; TTS_TIERS.forEach(function (t) { tts[t.name] = '本月 ' + ttsUsed_(t.id) + ' / ' + t.free + ' 字元'; });
-  return { ok: true, app: 'dse-speaking', version: 7, hasKey: getKeys_().length > 0, keys: getKeys_().length, models: out, tts: tts, time: new Date() };
+  return { ok: true, app: 'dse-speaking', version: 8, hasKey: getKeys_().length > 0, keys: getKeys_().length, models: out, tts: tts, time: new Date() };
 }
 /** 老師工具：檢查系統實際用緊邊條 Key（只顯示頭尾幾個字）*/
 function checkKeys() {
@@ -733,5 +744,5 @@ function msgPage_(title, body) {
     .setTitle(CONFIG.APP_TITLE).addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-return { doGet: doGet, doPost: doPost, setup: setup, testModels: testModels, checkQuota: checkQuota, checkKeys: checkKeys, testTTS: testTTS, ttsUsage: ttsUsage, clearCache: clearCache, startBuildLibrary: startBuildLibrary, stopBuildLibrary: stopBuildLibrary, buildLibraryStep: buildLibraryStep, libraryProgress: libraryProgress, fixLibrary: fixLibrary, status_: status_, VERSION: 7 };
+return { doGet: doGet, doPost: doPost, setup: setup, testModels: testModels, checkQuota: checkQuota, checkKeys: checkKeys, testTTS: testTTS, ttsUsage: ttsUsage, clearCache: clearCache, startBuildLibrary: startBuildLibrary, stopBuildLibrary: stopBuildLibrary, buildLibraryStep: buildLibraryStep, libraryProgress: libraryProgress, fixLibrary: fixLibrary, status_: status_, VERSION: 8 };
 })
