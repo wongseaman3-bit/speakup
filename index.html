@@ -15,7 +15,7 @@
  *  API 網址會喺同學登入時由後端自動傳過嚟，唔使填。
  * ========================================================= */
 window.APP_CONFIG = {
-  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycbxPv5lOUmziIxdgW_qUVR3uDNJcQi_G3ybSChN_EyTnL_y9KC9VWQPIpXrl2_PX7CbzrQ/exec'
+  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycbx_1Qz0oDHJrHib3Pnid_yVaIwKBQ4oMqrixdGXX5ZknSkrm7BKKVBQUh5u7CoDdPKuzg/exec'
 };
 </script>
 <style>
@@ -275,6 +275,20 @@ label.q small{font-weight:400;color:var(--muted)}
 .ttsl.off{background:var(--card2);color:var(--muted);border:1px dashed var(--line)}
 .ttsl.dark{display:block;margin-top:18px;font-family:"Noto Sans TC",sans-serif;font-size:14px}
 .ttsl.dark.on{background:#1d3a2c;color:#9fe3bf}.ttsl.dark.off{background:#1f2a38;color:#9fb0c4;border-color:#33425a}
+.w{cursor:pointer;border-radius:4px;transition:background .15s}
+.w:hover{background:var(--gold-soft)}
+.w.act,.wd.act{background:#ffd36b!important;color:#1b1206!important}
+.wpop{width:320px;max-width:calc(100vw - 24px)}
+.wpop .w1{font-family:Fraunces,serif;font-size:24px;font-weight:700;line-height:1.2}
+.wpop .ipa{color:var(--muted);font-size:14px;margin-top:2px}
+.wdef{margin-top:8px;font-size:14.5px}
+.posc{display:inline-block;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px;margin-bottom:6px}
+.zh1{font-size:17px;font-weight:600}
+.wdef .ex{font-family:Fraunces,Georgia,serif;font-style:italic;color:var(--muted);margin-top:6px}
+.trw{margin-top:8px}
+.trw .trtext{margin-top:8px;background:var(--blue-soft);color:var(--ink);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.75;white-space:pre-line}
+.trw.dark{margin-top:14px}.trw.dark .trbtn{background:#263243;color:#f4ede0;border:0}
+.trw.dark .trtext{background:#1f2a38;color:#dfe6ee}
 .tbar{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
 .tbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd36b,#ff8a59);animation:tfill linear forwards}
 @keyframes tfill{to{width:92%}}
@@ -641,9 +655,12 @@ function viewTask(tid,tab,qi){
   viewGD(t,head);
 }
 function paperBox(t){
+  const all=[t.title,t.text,t.task].concat(t.points).filter(Boolean).join('\n\n');
   return `<div class="paper"><div class="intro">${esc(t.intro)}</div>
-    <div class="art">${t.title?`<h3>${esc(t.title)}</h3>`:''}${esc(t.text)}</div>
-    <p class="tk">${esc(t.task)}</p><ul>${t.points.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`;
+    <div class="art">${t.title?`<h3>${ww(t.title)}</h3>`:''}${ww(t.text)}</div>
+    <p class="tk">${ww(t.task)}</p><ul>${t.points.map(p=>`<li>${ww(p)}</li>`).join('')}</ul>
+    <div class="row" style="justify-content:space-between;margin-top:6px"><span class="muted" style="font-size:13px">💡 撳任何英文字可以聽真人發音、睇詞性同中文解釋</span></div>
+    ${trBox(all)}</div>`;
 }
 
 /* ---------- 小組討論 ---------- */
@@ -714,7 +731,7 @@ function viewIR(t,head,qi){
   const N=notes(t.id); N.ir=N.ir||{}; const n=N.ir[i]=N.ir[i]||{};
   $('#app').innerHTML = head + `
   <div class="crumb" style="margin-top:12px"><a href="#/task/${t.id}/ir">← 返回問題列表</a></div>
-  <div class="card"><div class="muted" style="font-size:13px;font-weight:600">QUESTION ${i+1}</div><div class="bigq">${esc(q)}</div>
+  <div class="card"><div class="muted" style="font-size:13px;font-weight:600">QUESTION ${i+1}</div><div class="bigq">${ww(q)}</div>${trBox(q)}
     <div class="row" style="margin-top:12px"><button class="btn sm" onclick="speakWord(${esc(JSON.stringify(q))})">🔊 聽考官問題</button></div></div>
   <div class="sec-title"><span class="n">1</span><h2 class="h3">諗清楚再講 Plan your answer</h2></div>
   <div class="card">
@@ -749,7 +766,7 @@ function renderGDGuide(t){
     <div id="gdlib"></div>
     <div class="sec-title"><span class="n">4</span><h2 class="h3">萬用句子 · 跟讀練習 <small class="muted" style="font-weight:400;font-size:13px">（任何題目都用得）</small></h2></div>
     <div class="grid g2">${UNI.map((u,k)=>`<div class="card">${ttsBadge(u.text)}<div class="row" style="margin-top:8px"><b>${esc(u.title)}</b></div><div class="muted" style="font-size:13px;margin:2px 0 8px">${esc(u.zh)}</div>
-      <div class="script" style="font-size:15.5px">${esc(u.text)}</div>${ttsLine(u.text)}
+      <div class="script" style="font-size:15.5px">${ww(u.text)}</div>${trBox(u.text)}${ttsLine(u.text)}
       <div class="row" style="margin-top:10px"><button class="btn pri sm" onclick="openKaraoke(uniObj(${k}))">🎤 跟讀</button><button class="btn sm" onclick="saveScript(uniObj(${k}),this)">⭐ 收藏</button></div></div>`).join('')}</div>
     <div class="sec-title"><span class="n">5</span><h2 class="h3">討論框架 How a good discussion flows</h2></div>
     <div class="card">
@@ -772,7 +789,7 @@ async function loadGDLib(t){
   window._gdl=window._gdl||{}; window._gdl[t.id]=g;
   box.innerHTML=`<div class="stack">${(g.gd||[]).map((x,k)=>`<div class="card">${ttsBadge(x.text)}<div class="row" style="margin-top:10px"><span class="pill b">${k+1}</span><b class="serif" style="font-size:17px">${esc(x.title)}</b></div>
       ${x.zh?`<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(x.zh)}</div>`:''}
-      <div class="script" style="margin-top:10px">${esc(x.text)}</div>${ttsLine(x.text)}
+      <div class="script" style="margin-top:10px">${ww(x.text)}</div>${trBox(x.text)}${ttsLine(x.text)}
       <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(gdObj('${t.id}',${k}))">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(gdObj('${t.id}',${k}),this)">⭐ 加入我的講稿</button></div></div>`).join('')}</div>
     ${g.vocab&&g.vocab.length?`<div class="card" style="margin-top:14px"><b>主題生字</b> <small class="muted">（撳一下加入我的生字）</small><div class="chips" style="margin-top:10px">${g.vocab.map(vocabChip).join('')}</div></div>`:''}`;
 }
@@ -797,7 +814,7 @@ async function loadModels(t,i){
   const q=t.ir[i];
   const card=(lv,lab,cls,txt)=>{const obj={title:q,version:lab,text:txt,taskId:t.id,q:i,kind:'ir'};const k='m_'+lv;window['_'+k]=obj;
     return `<div class="card">${ttsBadge(txt)}<div class="row" style="margin-top:10px"><span class="lv ${cls}">${lab}</span><span class="muted" style="font-size:13px">${txt.split(/\s+/).length} words · 約 ${Math.round(txt.split(/\s+/).length/2.2)} 秒</span></div>
-    <div class="script" style="margin-top:12px">${esc(txt)}</div>${ttsLine(txt)}
+    <div class="script" style="margin-top:12px">${ww(txt)}</div>${trBox(txt)}${ttsLine(txt)}
     <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(window._${k})">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(window._${k},this)">⭐ 加入我的講稿</button></div></div>`;};
   box.innerHTML=`<div class="stack">${card('level4','Level 4','lv4',a.level4)}${card('level7','5**','lv7',a.level7)}</div>
    ${a.notes?`<div class="note g" style="margin-top:14px"><b>✨ 5** 學習重點：</b>${esc(a.notes)}</div>`:''}`;
@@ -878,7 +895,7 @@ function openKaraoke(s){
   const ov=document.createElement('div'); ov.className='kov'; ov.id='kov';
   ov.innerHTML=`<div class="khead"><div class="t"><b class="serif">${esc(s.title||'')}</b><small>${esc(s.version||'')} · 撳任何字可聽讀音或加入生字</small></div><span id="kvoice" class="ttsb ${TTS.st[ttsKey(s.text||'')]?'on':'off'}">${TTS.st[ttsKey(s.text||'')]?'✅ 已有真人發音':'⏳ 未有真人發音'}</span><button class="kx" onclick="closeKaraoke()">✕</button></div>
    <div class="kprog"><i id="kbar"></i></div>
-   <div class="kbody" id="kbody"><div class="inner"><div class="ktext plain" id="ktext">${b.html}</div><div id="kline" class="ttsl dark ${TTS.st[ttsKey(s.text||'')]?'on':'off'}">${TTS.st[ttsKey(s.text||'')]?'✅ <b>已有真人發音</b> · 撳下面「🎙 聽真人示範」即刻播放':'⏳ <b>未有真人發音</b> · 撳「🔊 聽示範朗讀」會自動製作（只需一次），之後即刻播放'}</div><div id="kres"></div></div></div>
+   <div class="kbody" id="kbody"><div class="inner"><div class="ktext plain" id="ktext">${b.html}</div>${s.text?trBox(s.text,true):''}<div id="kline" class="ttsl dark ${TTS.st[ttsKey(s.text||'')]?'on':'off'}">${TTS.st[ttsKey(s.text||'')]?'✅ <b>已有真人發音</b> · 撳下面「🎙 聽真人示範」即刻播放':'⏳ <b>未有真人發音</b> · 撳「🔊 聽示範朗讀」會自動製作（只需一次），之後即刻播放'}</div><div id="kres"></div></div></div>
    <div class="kctl" id="kctl"></div>`;
   document.body.appendChild(ov); document.body.style.overflow='hidden';
   $('#ktext').addEventListener('click',e=>{const w=e.target.closest('.wd'); if(w && K.mode==='idle') wordPop(w,+w.dataset.i);});
@@ -1196,29 +1213,73 @@ function renderResult(r){
   box.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function wordPop(el,i){
-  document.querySelector('.pop')?.remove();
-  const w=K.words[i].w.replace(/^[^A-Za-z]+|[^A-Za-z'’-]+$/g,''); if(!w) return;
-  speakWord(w);
-  const r=el.getBoundingClientRect(); const p=document.createElement('div'); p.className='pop';
-  const left=Math.min(window.innerWidth-310,Math.max(10,r.left)); const top=r.bottom+8>window.innerHeight-200?r.top-170:r.bottom+8;
-  p.style.left=left+'px'; p.style.top=top+'px';
-  const ctx=(K.sentences.find(s=>i>=s.start&&i<=s.end)||{}).text||'';
-  p.innerHTML=`<div class="row" style="justify-content:space-between"><span class="w">${esc(w)}</span><button class="ibtn" onclick="this.closest('.pop').remove()">✕</button></div>
-    ${el.dataset.tip?`<div class="note" style="margin:8px 0;font-size:13.5px;white-space:pre-line">${esc(el.dataset.tip)}</div>`:''}
-    <div id="popdef" class="muted" style="font-size:14px;margin:6px 0"></div>
-    <div class="row"><button class="btn sm" onclick="speakWord(${esc(JSON.stringify(w))})">🔊 再聽</button><button class="btn sm pri" id="popadd">＋ 加入我的生字</button></div>`;
+  const ctx=(K.sentences.find(x=>i>=x.start&&i<=x.end)||{}).text||'';
+  wordCard(el,K.words[i].w,ctx,el.dataset.tip);
+}
+/* ===================== 撳生字：真人發音 + 詞性 + 中文 + 加入生字庫 ===================== */
+function ww(text){ return String(text==null?'':text).split(/([A-Za-z][A-Za-z'’-]*[A-Za-z]|[A-Za-z])/).map((p,i)=>i%2?`<span class="w">${esc(p)}</span>`:esc(p)).join(''); }
+const POSZH={'n.':'名詞','v.':'動詞','adj.':'形容詞','adv.':'副詞','prep.':'介詞','conj.':'連詞','pron.':'代詞','det.':'限定詞','int.':'感嘆詞','phr.':'短語'};
+function ctxOf(el,word){
+  const blk=el.closest('.script,.art,.tk,li,.bigq,h3,.seg,.ktext,.ex,.gq,.dir')||el.parentNode;
+  const txt=(blk&&blk.textContent||'').replace(/\s+/g,' ').trim();
+  const sents=txt.split(/(?<=[.!?])\s+/); return (sents.find(s=>s.toLowerCase().includes(word.toLowerCase()))||txt).slice(0,300);
+}
+async function wordCard(el,raw,ctx,tip){
+  document.querySelector('.pop')?.remove(); document.querySelectorAll('.w.act,.wd.act').forEach(x=>x.classList.remove('act'));
+  const w=String(raw||'').replace(/^[^A-Za-z]+|[^A-Za-z'’-]+$/g,'').replace(/’/g,"'"); if(!w) return;
+  el.classList.add('act');
+  const r=el.getBoundingClientRect(), p=document.createElement('div'); p.className='pop wpop';
+  const small=window.innerWidth<560;
+  if(small){ p.style.left='12px'; p.style.right='12px'; p.style.bottom='calc(16px + env(safe-area-inset-bottom))'; }
+  else { p.style.left=Math.min(window.innerWidth-340,Math.max(10,r.left-10))+'px'; p.style.top=(r.bottom+260>window.innerHeight?Math.max(10,r.top-250):r.bottom+8)+'px'; }
+  p.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-start"><div><div class="w1">${esc(w)}</div><div class="ipa" id="wipa"></div></div>
+     <button class="ibtn" onclick="closeWord()">✕</button></div>
+    ${tip?`<div class="note" style="margin:8px 0;font-size:13.5px;white-space:pre-line">${esc(tip)}</div>`:''}
+    <div id="wdef" class="wdef"><span class="spin"></span> 查緊字典…</div>
+    <div class="row" style="margin-top:10px"><button class="btn sm" id="wsay">🔊 真人發音</button><button class="btn sm pri" id="wadd">＋ 加入我的生字</button></div>
+    <div id="wnote" class="muted" style="font-size:12px;margin-top:6px"></div>`;
   document.body.appendChild(p);
-  const already=DATA.vocab.find(v=>v.word.toLowerCase()===w.toLowerCase());
-  if(already){ $('#popdef').textContent=(already.pos||'')+' '+(already.zh||''); $('#popadd').textContent='✓ 已在我的生字'; }
-  $('#popadd').onclick=async()=>{
-    if(DATA.vocab.some(v=>v.word.toLowerCase()===w.toLowerCase())) return toast('已在我的生字');
-    const b=$('#popadd'); b.innerHTML='<span class="spin"></span>';
-    let d={word:w.toLowerCase(),example:ctx};
-    try{ d=Object.assign(d,await aiCached('w_'+w.toLowerCase(),'define',{word:w,context:ctx})); }catch(e){}
-    addVocab(d); $('#popdef').textContent=(d.ipa?d.ipa+'  ':'')+(d.pos||'')+' '+(d.zh||''); b.textContent='✓ 已加入';
+  const say=$('#wsay'), add=$('#wadd');
+  const play=async()=>{
+    say.disabled=true; say.innerHTML='<span class="spin"></span> 載入真人發音';
+    try{ const url=await getReal(w,false); if(url){ if(_clip){try{_clip.pause()}catch(e){}} _clip=new Audio(url); await _clip.play().catch(()=>{}); $('#wnote').textContent=''; } }
+    catch(e){ speakBrowser(w); const n=$('#wnote'); if(n) n.textContent='⚠️ 真人發音暫時未能使用，今次用咗預設發音'; }
+    if(document.body.contains(say)){ say.disabled=false; say.innerHTML='🔊 真人發音'; }
+  };
+  say.onclick=play; play();
+  const have=()=>DATA.vocab.some(v=>v.word.toLowerCase()===w.toLowerCase());
+  if(have()) add.textContent='✓ 已在我的生字';
+  let d={word:w.toLowerCase(),example:ctx||''};
+  try{ d=Object.assign(d,await aiCached('w2_'+w.toLowerCase(),'define',{word:w,context:ctx||''})); }catch(e){ d._err=e.message; }
+  if(!document.body.contains(p)) return;
+  const pos=String(d.pos||'').trim(), pz=d.pos_zh||POSZH[pos]||'';
+  $('#wipa').textContent=d.ipa||'';
+  $('#wdef').innerHTML=d._err?`<span class="muted">⚠️ 未能取得解釋：${esc(d._err)}</span>`:
+    `${pos?`<span class="posc">${esc(pos)}${pz?' '+esc(pz):''}</span>`:''}<div class="zh1">${esc(d.zh||'')}</div>${d.example?`<div class="ex">${ww(d.example)}</div>`:''}
+     ${d.word&&d.word.toLowerCase()!==w.toLowerCase()?`<div class="muted" style="font-size:12.5px;margin-top:4px">原形：<b>${esc(d.word)}</b></div>`:''}`;
+  add.onclick=()=>{
+    if(have()) return toast('已在我的生字');
+    addVocab({word:d.word&&!d._err?d.word:w,pos:pos+(pz?' '+pz:''),zh:d.zh||'',example:d.example||ctx||'',ipa:d.ipa||''}); add.textContent='✓ 已加入';
   };
 }
-document.addEventListener('click',e=>{ const p=document.querySelector('.pop'); if(p && !p.contains(e.target) && !e.target.closest('.wd')) p.remove(); });
+function closeWord(){ document.querySelector('.pop')?.remove(); document.querySelectorAll('.w.act,.wd.act').forEach(x=>x.classList.remove('act')); }
+document.addEventListener('click',e=>{
+  const w=e.target.closest('.w');
+  if(w && !w.closest('.pop .w1')){ e.preventDefault(); e.stopPropagation(); return wordCard(w,w.textContent,ctxOf(w,w.textContent)); }
+  const p=document.querySelector('.pop'); if(p && !p.contains(e.target) && !e.target.closest('.wd')) closeWord();
+},true);
+
+/* ===================== 中文翻譯（預設隱藏）===================== */
+function trBox(text,dark){ window._trT=window._trT||[]; let i=window._trT.indexOf(text); if(i<0){window._trT.push(text); i=window._trT.length-1;}
+  return `<div class="trw ${dark?'dark':''}" data-tr="${i}"><button class="btn sm ghost trbtn" onclick="toggleTr(this)">🀄 顯示中文翻譯</button><div class="trtext" hidden></div></div>`; }
+async function toggleTr(btn){
+  const box=btn.closest('.trw'), out=box.querySelector('.trtext'), text=window._trT[+box.dataset.tr];
+  if(out.dataset.ok){ out.hidden=!out.hidden; btn.textContent=out.hidden?'🀄 顯示中文翻譯':'🀄 隱藏中文翻譯'; return; }
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> 翻譯中…'; out.hidden=false; out.innerHTML='';
+  try{ const r=await aiCached('tr_'+text.slice(0,60)+text.length,'translate',{text}); out.textContent=r.zh||''; out.dataset.ok=1; btn.textContent='🀄 隱藏中文翻譯'; }
+  catch(e){ out.innerHTML=errCard(e.message); btn.textContent='🀄 再試翻譯'; }
+  btn.disabled=false;
+}
 
 boot();
 </script>
