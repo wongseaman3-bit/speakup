@@ -15,7 +15,7 @@
  *  API 網址會喺同學登入時由後端自動傳過嚟，唔使填。
  * ========================================================= */
 window.APP_CONFIG = {
-  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycbx_1Qz0oDHJrHib3Pnid_yVaIwKBQ4oMqrixdGXX5ZknSkrm7BKKVBQUh5u7CoDdPKuzg/exec'
+  LOGIN_URL: '在這裡貼上_登入部署網址_/exec'
 };
 </script>
 <style>
@@ -543,7 +543,7 @@ async function diagnose(e){
     const r=await fetch(API_URL+(API_URL.includes('?')?'&':'?')+'ping=1',{signal:ctl.signal}); const t=await r.text();
     let j=null; try{ j=JSON.parse(t); }catch(x){}
     ping=!j?'❌ API 回傳唔係系統資料：請檢查第 1、2 點'
-      :!(j.version>=4)?'⚠️ API 部署仲係舊版本程式：請「管理部署作業 → 編輯 → 新版本 → 部署」'
+      :!(j.version>=7)?'⚠️ API 部署仲係舊版本程式：請「管理部署作業 → 編輯 → 新版本 → 部署」'
       :!j.hasKey?'⚠️ 後端未有 API Key：請喺 Apps Script 貼好 Key 後執行 setup'
       :'✅ API 正常（如仍有問題，請撳「重新登入」）';
   }catch(x){ ping='❌ 連唔到 API：請檢查第 1、2 點（API 部署要「任何人」）'; }
@@ -1249,18 +1249,38 @@ async function wordCard(el,raw,ctx,tip){
   say.onclick=play; play();
   const have=()=>DATA.vocab.some(v=>v.word.toLowerCase()===w.toLowerCase());
   if(have()) add.textContent='✓ 已在我的生字';
-  let d={word:w.toLowerCase(),example:ctx||''};
+  let d={word:w.toLowerCase(),example:ctx||''}, aiDone=false;
+  // 即時字典（免費，冇中文）：先顯示音標同詞性
+  quickDict(w).then(q=>{ if(!q||aiDone||!document.body.contains(p)) return;
+    $('#wipa').textContent=q.ipa||'';
+    $('#wdef').innerHTML=`${q.pos.map(x=>`<span class="posc">${esc(x)} ${esc(POSZH[x]||'')}</span>`).join(' ')}<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(q.def||'')}</div><div class="muted" style="font-size:13px;margin-top:6px"><span class="spin"></span> 中文解釋載入中…</div>`;
+  });
+  const t0=Date.now(), slowT=setInterval(()=>{ const n=$('#wnote'); if(!aiDone&&n&&Date.now()-t0>12000) n.textContent='AI 繁忙，中文解釋需時較長（已等 '+Math.floor((Date.now()-t0)/1000)+' 秒）'; },1000);
   try{ d=Object.assign(d,await aiCached('w2_'+w.toLowerCase(),'define',{word:w,context:ctx||''})); }catch(e){ d._err=e.message; }
+  aiDone=true; clearInterval(slowT); const wn=$('#wnote'); if(wn&&/AI 繁忙/.test(wn.textContent)) wn.textContent='';
   if(!document.body.contains(p)) return;
   const pos=String(d.pos||'').trim(), pz=d.pos_zh||POSZH[pos]||'';
   $('#wipa').textContent=d.ipa||'';
-  $('#wdef').innerHTML=d._err?`<span class="muted">⚠️ 未能取得解釋：${esc(d._err)}</span>`:
+  const q=QD[w.toLowerCase()];
+  $('#wdef').innerHTML=d._err?`${q?`${q.pos.map(x=>`<span class="posc">${esc(x)} ${esc(POSZH[x]||'')}</span>`).join(' ')}<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(q.def||'')}</div>`:''}<div class="note" style="margin-top:8px;font-size:13px">⚠️ 中文解釋暫時未能載入：${esc(d._err)}</div>`:
     `${pos?`<span class="posc">${esc(pos)}${pz?' '+esc(pz):''}</span>`:''}<div class="zh1">${esc(d.zh||'')}</div>${d.example?`<div class="ex">${ww(d.example)}</div>`:''}
      ${d.word&&d.word.toLowerCase()!==w.toLowerCase()?`<div class="muted" style="font-size:12.5px;margin-top:4px">原形：<b>${esc(d.word)}</b></div>`:''}`;
   add.onclick=()=>{
     if(have()) return toast('已在我的生字');
     addVocab({word:d.word&&!d._err?d.word:w,pos:pos+(pz?' '+pz:''),zh:d.zh||'',example:d.example||ctx||'',ipa:d.ipa||''}); add.textContent='✓ 已加入';
   };
+}
+const QD={};
+async function quickDict(w){
+  const k=w.toLowerCase(); if(QD[k]!==undefined) return QD[k];
+  try{
+    const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(k)); if(!r.ok) return QD[k]=null;
+    const j=await r.json(), e=j[0]||{}, map={noun:'n.',verb:'v.',adjective:'adj.',adverb:'adv.',preposition:'prep.',conjunction:'conj.',pronoun:'pron.',interjection:'int.',determiner:'det.'};
+    const pos=[...new Set((e.meanings||[]).map(m=>map[m.partOfSpeech]).filter(Boolean))].slice(0,3);
+    const ipa=e.phonetic||((e.phonetics||[]).find(x=>x.text)||{}).text||'';
+    const def=(((e.meanings||[])[0]||{}).definitions||[{}])[0].definition||'';
+    return QD[k]={pos,ipa,def};
+  }catch(x){ return QD[k]=null; }
 }
 function closeWord(){ document.querySelector('.pop')?.remove(); document.querySelectorAll('.w.act,.wd.act').forEach(x=>x.classList.remove('act')); }
 document.addEventListener('click',e=>{
