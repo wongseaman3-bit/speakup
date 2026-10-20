@@ -15,7 +15,7 @@
  *  API 網址會喺同學登入時由後端自動傳過嚟，唔使填。
  * ========================================================= */
 window.APP_CONFIG = {
-  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycby9PKCS_oV6pHrSqBOpcA0LcbRNCvh8whIyO3EBv-xOlx7RqV0odTtklUtH8JzlqXzPnA/exec'
+  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycby-JtlyIAtzcM3iieY82JxWvDq7STVvQyJoT-dUN_SnPM9Hi-3aqt1ZG4ECupTNOJ76_g/exec'
 };
 </script>
 <style>
@@ -330,6 +330,17 @@ const PHRASES = [
     'It seems we’ve reached a consensus that ___.',
     'Before we finish, let’s quickly recap the main points.']}
 ];
+const UNI = [
+  {title:'開場 Opening', zh:'第一個講：交代目的、次序，再邀請組員。', text:'Good morning, everyone. Today we are here to decide what to include in our project. There are a few areas we need to cover, so shall we go through them one by one? Let\'s kick things off with the first point. Who would like to start?'},
+  {title:'表達意見 Giving opinions', zh:'立場清楚，之後即刻講理由。', text:'From my perspective, this issue really matters to teenagers in Hong Kong. The way I see it, the biggest problem is that students simply do not have enough time. That is why I would argue that we need a more practical solution.'},
+  {title:'同意並延伸 Agreeing and building', zh:'5** 關鍵：唔止 I agree，要加新資料。', text:'I couldn\'t agree more with what you just said. On top of that, I would like to add another point. Building on your idea, we could also invite parents to take part, which would make the plan even more effective.'},
+  {title:'禮貌反對 Disagreeing politely', zh:'先肯定對方，再轉折，最後畀理由。', text:'I see where you are coming from, but I am afraid I have a slightly different view. That is true to some extent. However, we should also consider the cost. Have you thought about how students from low-income families might feel?'},
+  {title:'邀請組員 Inviting others', zh:'叫名、問具體問題，顯示你帶動討論。', text:'Joyce, we haven\'t heard from you yet. What is your take on this? How do you feel about the idea of a weekly activity? Do you think it would work in our school?'},
+  {title:'舉例 Giving examples', zh:'用香港或校園例子最有說服力。', text:'Take our school as an example. A case in point is the reading scheme we joined last year. From my own experience, students are much more motivated when an activity is both fun and meaningful.'},
+  {title:'澄清 Clarifying', zh:'聽唔明唔緊要，問返就係溝通策略。', text:'Sorry, just to clarify, do you mean that we should cancel the event completely? Could you elaborate a bit on that? So what you are saying is that time is the main problem, right?'},
+  {title:'轉話題 Moving on', zh:'控制時間，令討論有組織。', text:'Since we have covered the benefits, shall we move on to the problems? Given the time, let\'s turn to the next point. That brings us nicely to the question of how we can put this plan into practice.'},
+  {title:'總結 Summarising', zh:'最後一分鐘總結共識。', text:'So, to sum up, we have agreed on three main points. First, the plan would benefit students. Second, we need support from our teachers. Finally, we should start with a small trial. It seems we have reached a consensus.'}
+];
 const IR_PHRASES = [
   'Personally, I’d say ___.', 'To be honest, I think ___.', 'The main reason is that ___.',
   'For instance, ___.', 'Admittedly, ___, but ___.', 'That’s why I strongly believe ___.',
@@ -373,20 +384,46 @@ function save(){
   clearTimeout(saveT);
   saveT=setTimeout(()=>api('save',{data:DATA}).catch(e=>{console.warn(e); toast('⚠️ 進度未能儲存，稍後會再試');}),1500);
 }
+const HEAVY={assess:1,lib:1};
+let CURRENT_CTL=null;
 async function api(action,payload){
   if(!API_URL||!TOKEN){ logout(true); throw new Error('請先登入'); }
   const body=JSON.stringify(Object.assign({action,token:TOKEN},payload||{}));
+  const heavy=!!HEAVY[action], tries=heavy?1:3;
   let j;
-  for(let i=0;i<3;i++){
+  for(let i=0;i<tries;i++){
+    const ctl=new AbortController(); if(heavy) CURRENT_CTL=ctl;
+    const tm=setTimeout(()=>ctl.abort('timeout'),heavy?125000:30000);
     try{
-      const r=await fetch(API_URL,{method:'POST',body});
-      j=await r.json();
-      if(j.ok||j.error==='LOGIN'||!/too many|simultaneous|Service|timed out|繁忙/i.test(j.message||'')) break;
-    }catch(e){ j={ok:false,error:'NET',message:'網絡連線出錯，請檢查 Wi-Fi'}; }
-    await new Promise(r=>setTimeout(r,2500*(i+1)+Math.random()*2000));
+      const r=await fetch(API_URL,{method:'POST',body,signal:ctl.signal});
+      const txt=await r.text();
+      try{ j=JSON.parse(txt); }catch(e){ j={ok:false,error:'NOTJSON',message:/<html|<!doctype/i.test(txt)?'API 回傳咗網頁而唔係資料（多數係 Apps Script 執行超時，或 API 部署設定有問題）':'伺服器回應格式錯誤'}; }
+    }catch(e){
+      j={ok:false,error:'NET',message: ctl.signal.reason==='cancel'?'已取消。':
+        ctl.signal.aborted?'等咗超過 2 分鐘都未有回應，已自動停止。請再試一次；如果經常出現，請通知老師查看「系統日誌」。':
+        '網絡連線出錯，請檢查 Wi-Fi 後再試。'};
+    }finally{ clearTimeout(tm); if(heavy) CURRENT_CTL=null; }
+    if(j.ok||j.error!=='NET') break;
+    if(i<tries-1) await new Promise(r=>setTimeout(r,2000*(i+1)));
   }
   if(!j.ok){ if(j.error==='LOGIN') logout(true); throw new Error(j.message||j.error); }
   return j.result;
+}
+function cancelAI(){ if(CURRENT_CTL) CURRENT_CTL.abort('cancel'); }
+/* 計時顯示：每秒更新「已等 N 秒」，太耐會提示 */
+function ticker(el,label){
+  const t0=Date.now();
+  const draw=()=>{ if(!el||!document.body.contains(el)){clearInterval(iv);return;}
+    const sec=Math.floor((Date.now()-t0)/1000);
+    el.innerHTML=`<div class="loading" style="flex-wrap:wrap"><span class="spin"></span> ${label} <b style="font-variant-numeric:tabular-nums">${sec} 秒</b>
+      ${sec>=45?`<span style="width:100%;font-size:13px">AI 繁忙時可能要等 1–2 分鐘；系統最多等 2 分鐘就會停止並話你知原因。</span>`:''}
+      <button class="btn sm ghost" onclick="cancelAI()">取消</button></div>`; };
+  draw(); const iv=setInterval(draw,1000); return ()=>clearInterval(iv);
+}
+function errCard(msg){
+  const m=String(msg||''), k=m.indexOf('［已嘗試：');
+  const main=k>=0?m.slice(0,k):m, tried=k>=0?m.slice(k+5).replace(/］$/,'').split('；'):[];
+  return `<div class="note" style="margin-top:8px"><b>⚠️ ${esc(main)}</b>${tried.length?`<details style="margin-top:6px"><summary style="cursor:pointer;font-size:13px">查看系統嘗試過的 AI 模型</summary><ul style="margin:6px 0 0;padding-left:18px;font-size:13px">${tried.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`:''}</div>`;
 }
 async function aiCached(key,action,payload){
   if(MEM[key]) return MEM[key];
@@ -435,13 +472,37 @@ async function boot(){
     BOOT={returning:r.returning,lastSeen:r.lastSeen};
   }catch(e){
     if(!TOKEN) return;
-    if(!PROFILE){ $('#app').innerHTML=`<div class="empty">⚠️ 未能連接伺服器：${esc(e.message)}<br><br><button class="btn" onclick="boot()">↻ 再試</button></div>`; return; }
-    toast('未能連接伺服器，暫用本機資料');
+    diagnose(e); return;
   }
   renderMe();
   window.addEventListener('hashchange',route);
   route();
   welcome();
+}
+async function diagnose(e){
+  let ping='檢查中…';
+  $('#app').innerHTML=`<div class="login"><div class="card" style="text-align:left;max-width:560px">
+    <h2 class="h2">⚠️ 未能載入學習進度</h2>
+    <p><b>錯誤：</b>${esc(e&&e.message||e)}</p>
+    <p class="muted" style="font-size:13px;word-break:break-all"><b>正在使用的 API 網址：</b><br>${esc(API_URL||'（冇）')}</p>
+    <div id="ping" class="note">連線測試：${ping}</div>
+    <div class="note b" style="margin-top:10px;font-size:14px"><b>老師檢查清單</b><br>
+     1. Apps Script「API」部署的「誰可以存取」要係 <b>任何人</b>。<br>
+     2. Code.gs 第 16 行 API_URL 要係「API」部署的網址（唔係登入嗰條）。<br>
+     3. 改完 Code.gs 後，兩個部署都要「管理部署作業 → 編輯 → 新版本 → 部署」。<br>
+     4. 改完要學生撳下面「重新登入」。</div>
+    <div class="row" style="margin-top:14px"><button class="btn pri" onclick="logout()">🔐 重新登入</button><button class="btn" onclick="boot()">↻ 再試</button></div>
+  </div></div>`;
+  try{
+    const ctl=new AbortController(); setTimeout(()=>ctl.abort(),20000);
+    const r=await fetch(API_URL+(API_URL.includes('?')?'&':'?')+'ping=1',{signal:ctl.signal}); const t=await r.text();
+    let j=null; try{ j=JSON.parse(t); }catch(x){}
+    ping=!j?'❌ API 回傳唔係系統資料：請檢查第 1、2 點'
+      :!(j.version>=4)?'⚠️ API 部署仲係舊版本程式：請「管理部署作業 → 編輯 → 新版本 → 部署」'
+      :!j.hasKey?'⚠️ 後端未有 API Key：請喺 Apps Script 貼好 Key 後執行 setup'
+      :'✅ API 正常（如仍有問題，請撳「重新登入」）';
+  }catch(x){ ping='❌ 連唔到 API：請檢查第 1、2 點（API 部署要「任何人」）'; }
+  const el=$('#ping'); if(el) el.textContent='連線測試：'+ping;
 }
 function renderMe(){
   $('#me').innerHTML=`<span class="nm">${esc(PROFILE.cls?PROFILE.cls+' · ':'')}${esc(PROFILE.name)}</span><span class="avatar" title="${esc(PROFILE.email)}">${esc((PROFILE.name||'?').slice(0,1))}</span><button class="btn sm ghost" onclick="logout()">登出</button>`;
@@ -459,7 +520,7 @@ function welcome(){
     ${last?`<button class="btn acc" style="width:100%;justify-content:center;margin-top:14px" onclick="this.closest('.wov').remove();location.hash='#/task/${last.id}'">▶ 繼續上次：${esc(last.paper.label)} · ${esc((last.title||last.label).slice(0,30))}</button>`:''}`
    :`<h2 class="serif" style="font-size:26px;margin:6px 0 4px">歡迎，${esc(PROFILE.name)}！</h2>
     <p class="muted" style="margin:0 0 12px">你的進度會自動儲存，下次用同一個學校帳戶登入就會自動載入。</p>
-    <div class="wsteps"><div><b>①</b>揀題目，先寫低自己的想法</div><div><b>②</b>解鎖指引、句式、Level 4 及 5** 參考</div><div><b>③</b>跟讀錄音，AI 分析讀音同語調</div></div>`}
+    <div class="wsteps"><div><b>①</b>揀題目，先寫低自己的想法</div><div><b>②</b>睇好用回應、萬用句子、Level 4 及 5** 講稿</div><div><b>③</b>跟讀錄音（最多 90 秒），AI 分析發音同語調</div></div>`}
    <button class="btn ${BOOT.returning&&last?'':'pri'}" style="width:100%;justify-content:center;margin-top:10px" onclick="this.closest('.wov').remove()">${BOOT.returning?'去題目首頁':'開始練習 →'}</button></div>`;
   ov.addEventListener('click',e=>{ if(e.target===ov) ov.remove(); });
   document.body.appendChild(ov);
@@ -501,9 +562,9 @@ function viewHome(){
     </div>
     ${last?`<a class="btn acc" style="margin-top:16px" href="#/task/${last.id}">▶ 繼續：${esc(last.paper.label)} · ${esc(last.title||last.label)}</a>`:''}
     <div class="how">
-      <div><b>① 讀題 · 自己諗</b><small>先寫低你的立場、理由同例子，系統會即時點評。</small></div>
-      <div><b>② 解鎖指引與範文</b><small>思考方向、句式、生字，再睇 Level 4 同 5** 參考。</small></div>
-      <div><b>③ 跟讀 · AI 評分</b><small>卡拉OK式跟讀，錄音後 AI 指出讀音、漏字同語調。</small></div>
+      <div><b>① 讀題 · 自己諗</b><small>先寫低你的立場、理由同例子。</small></div>
+      <div><b>② 睇範文</b><small>即時睇小組討論好用回應、萬用句子，同 Level 4 ／ 5** 個人回應講稿。</small></div>
+      <div><b>③ 跟讀 · AI 分析</b><small>每段最多 90 秒，AI 分析相似度、發音、語調、讀漏讀錯。</small></div>
     </div>
   </section>
   <div class="sec-title"><h2 class="h2">歷屆試題</h2><span class="muted" style="margin-left:auto;font-size:14px">${PAPERS.length} 份 · ${total} 題</span></div>
@@ -578,7 +639,7 @@ function viewGD(t,head){
     <textarea data-k="extra" placeholder="e.g. the role of the government / parents / schools…">${esc(n.extra)}</textarea>
   </div>
   <div class="check" id="gdcheck"></div>
-  <div class="unlock"><button class="btn acc" id="gdbtn" onclick="unlockGD('${t.id}')">🔓 提交我的想法，解鎖指引</button></div>
+  <div class="unlock"><button class="btn acc" id="gdbtn" onclick="unlockGD('${t.id}')">🔓 提交我的想法，睇好用回應及萬用句子</button></div>
   <div id="gdout"></div>`;
   document.querySelectorAll('#app textarea').forEach(el=>el.addEventListener('input',()=>{n[el.dataset.k]=el.value; save(); gdCheck(t);}));
   gdCheck(t);
@@ -598,86 +659,11 @@ async function unlockGD(tid){
   if(!N.gdUnlocked && !gdCheck(t)) return toast('請先完成大部分思考步驟');
   N.gdUnlocked=true; save(); renderGDGuide(t,true);
 }
-function renderGDGuide(t,withCoach){
-  const out=$('#gdout'); const n=notes(t.id).gd;
-  out.innerHTML=`
-    <div class="sec-title"><span class="n">3</span><h2 class="h3">AI 點評你的想法</h2><button class="btn sm ghost" style="margin-left:auto" onclick="coachGD('${t.id}')">↻ 再點評</button></div>
-    <div class="card" id="gdcoach">${n._coach?coachHTML(n._coach):`<div class="muted">按「再點評」，AI 會看看你的想法並提出追問。</div>`}</div>
-    <div class="sec-title"><span class="n">4</span><h2 class="h3">討論框架 How a good discussion flows</h2></div>
-    <div class="card">
-      <div class="timeline">
-        <div><b>0:00–0:30</b>開場：一位同學交代目的及次序</div>
-        <div><b>0:30–6:30</b>逐點討論：先回應上一位，再加自己觀點</div>
-        <div><b>6:30–7:30</b>Anything else / 解決分歧</div>
-        <div><b>7:30–8:00</b>總結共識</div>
-      </div>
-      <ul class="fb" style="margin:14px 0 0;padding-left:20px;font-size:15px">
-        <li>每人大約講 <b>3–4 次</b>，每次 <b>20–40 秒</b>；唔好一次過講晒所有點。</li>
-        <li>每次開口：<b>回應（1 句）→ 新觀點 → 理由 → 例子 → 邀請下一位</b>。</li>
-        <li>叫組員名字、望住佢哋講，唔好望住筆記讀稿。</li>
-        <li>有分歧係好事，禮貌地反對並解釋，會加 Communication Strategies 分。</li>
-      </ul>
-    </div>
-    <div class="sec-title"><span class="n">5</span><h2 class="h3">常用好句式 Useful expressions</h2></div>
-    <div class="card">${PHRASES.map((c,i)=>`<details class="phrcat" ${i<3?'open':''}><summary>${c.k}</summary><div class="muted" style="font-size:13.5px;margin-bottom:4px">${c.zh}</div>${c.list.map(phraseRow).join('')}</details>`).join('')}</div>
-    <div id="gdai"></div>`;
-  if(withCoach) coachGD(t.id);
-  loadGuide(t);
-}
 function phraseRow(s){
   const saved=DATA.vocab.some(v=>v.word===s);
   return `<div class="phr"><span class="t">${fmtBlank(s)}</span><span class="row" style="flex:none;gap:6px"><button class="ibtn" onclick="speakWord(this.closest('.phr').querySelector('.t').innerText)">🔊</button><button class="ibtn ${saved?'on':''}" onclick='addVocab(${JSON.stringify({word:s,pos:'phrase',zh:'句式',example:''}).replace(/'/g,"&#39;")},this)'>${saved?'✓':'＋'}</button></span></div>`;
 }
-async function coachGD(tid){
-  const t=TASKS[tid]; const n=notes(tid).gd; const box=$('#gdcoach'); if(!box) return;
-  box.innerHTML='<div class="loading"><span class="spin"></span> AI 正在閱讀你的想法…</div>';
-  try{ const r=await api('coach',{kind:'gd',task:taskPayload(t),notes:cleanNotes(n)}); n._coach=r; save(); box.innerHTML=coachHTML(r); }
-  catch(e){ box.innerHTML=`<div class="muted">⚠️ ${esc(e.message)}</div>`; }
-}
 function cleanNotes(n){const o={};Object.keys(n).forEach(k=>{if(k[0]!=='_'&&typeof n[k]==='string'&&n[k].trim())o[k]=n[k]});return o;}
-function coachHTML(r){
-  return `<p style="margin-top:0"><b>${esc(r.rating)}</b></p>
-   ${r.good&&r.good.length?`<div class="note g"><b>👍 做得好</b><ul class="fb" style="margin:4px 0 0;padding-left:20px">${r.good.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
-   ${r.improve&&r.improve.length?`<div class="note" style="margin-top:10px"><b>🛠 可以改善</b><ul class="fb" style="margin:4px 0 0;padding-left:20px">${r.improve.map(x=>`<li>${esc(x.issue_zh)}${x.try_en?`<br><i class="serif">→ ${esc(x.try_en)}</i>`:''}</li>`).join('')}</ul></div>`:''}
-   ${r.think_more&&r.think_more.length?`<div class="note b" style="margin-top:10px"><b>🤔 再諗深一層</b><ul class="fb" style="margin:4px 0 0;padding-left:20px">${r.think_more.map(x=>`<li class="serif">${esc(x)}</li>`).join('')}</ul></div>`:''}
-   ${r.language_fix&&r.language_fix.length?`<div style="margin-top:10px"><b>✏️ 語言修正</b>${r.language_fix.map(x=>`<div class="fix"><s>${esc(x.from)}</s> → <ins>${esc(x.to)}</ins></div>`).join('')}</div>`:''}`;
-}
-async function loadGuide(t){
-  const box=$('#gdai'); if(!box) return;
-  box.innerHTML='<div class="loading"><span class="spin"></span> 正在準備本題的思考方向、生字及範例討論（第一次需時約 20–40 秒）…</div>';
-  let g;
-  try{ g=await aiCached('gd_'+t.id,'guide',{taskId:t.id,task:taskPayload(t)}); }
-  catch(e){ box.innerHTML=`<div class="card" style="margin-top:20px"><b>本題 AI 指引</b><p class="muted">⚠️ ${esc(e.message)}</p>${DEMO?`<button class="btn" onclick="openKaraoke({title:'Sample GD reply',version:'Level 4',text:DEMO_SCRIPTS.l4.text})">🎤 試用卡拉OK跟讀</button>`:'<button class="btn" onclick="loadGuide(TASKS[\''+t.id+'\'])">↻ 再試</button>'}</div>`; return; }
-  box.innerHTML=`
-   <div class="sec-title"><span class="n">6</span><h2 class="h3">本題思考方向 Ideas & directions</h2></div>
-   <div class="card stack">
-     <div class="note b">${esc(g.summary_zh||'')}</div>
-     ${g.pitfalls_zh&&g.pitfalls_zh.length?`<div><b>⚠️ 常見失分位</b><ul class="fb" style="margin:4px 0 0;padding-left:20px">${g.pitfalls_zh.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
-     ${(g.points||[]).map(p=>`<div><b>● ${esc(p.point)}</b>
-        ${(p.guiding_q||[]).map(q=>`<div class="gq">${esc(q)}</div>`).join('')}
-        ${(p.directions||[]).map(d=>`<div class="dir"><div class="s">${esc(d.side)}</div><div class="serif">${esc(d.idea)}</div>${d.example?`<div class="muted" style="font-size:14px">例：${esc(d.example)}</div>`:''}</div>`).join('')}</div>`).join('')}
-     ${g.extra_ideas&&g.extra_ideas.length?`<div><b>● Anything else</b>${g.extra_ideas.map(x=>`<div class="dir serif">${esc(x)}</div>`).join('')}</div>`:''}
-   </div>
-   ${g.topic_phrases&&g.topic_phrases.length?`<div class="sec-title"><span class="n">7</span><h2 class="h3">本題專用句式 Topic sentence frames</h2></div>
-   <div class="card">${g.topic_phrases.map(x=>`<div class="muted" style="font-size:13px;margin-top:6px">${esc(x.use_zh)}</div>${phraseRow(x.en)}`).join('')}</div>`:''}
-   <div class="sec-title"><span class="n">8</span><h2 class="h3">主題生字 Vocabulary <small class="muted" style="font-weight:400;font-size:13px">（撳一下加入我的生字）</small></h2></div>
-   <div class="card"><div class="chips">${(g.vocab||[]).map(vocabChip).join('')}</div></div>
-   <div class="sec-title"><span class="n">9</span><h2 class="h3">範例討論 Sample discussion</h2></div>
-   <div class="card">
-     <div class="vtabs"><button class="on" onclick="gdSample(this,'level4')">Level 4</button><button onclick="gdSample(this,'level7')">5**</button></div>
-     <div id="gdsample"></div>
-   </div>`;
-  window._gd = {t,g}; gdSample(null,'level4');
-}
-function gdSample(btn,lv){
-  if(btn){btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
-  const {t,g}=window._gd; const turns=g[lv]||[]; const label=lv==='level7'?'5**':'Level 4';
-  const segs=turns.map(x=>({speaker:x.speaker,text:x.text}));
-  window._gdSeg={title:(t.title||t.label)+' — Group Interaction',version:label,segments:segs,taskId:t.id,kind:'gd'};
-  $('#gdsample').innerHTML=`<div class="chat">${turns.map(x=>`<div class="bub"><span class="sp s${esc(x.speaker)}">${esc(x.speaker)}</span><div class="tx">${esc(x.text)}</div></div>`).join('')}</div>
-   ${lv==='level7'&&g.why_level7_zh?`<div class="note g" style="margin-top:14px"><b>✨ 點解係 5**？</b><ul class="fb" style="margin:4px 0 0;padding-left:20px">${g.why_level7_zh.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
-   <div class="row" style="margin-top:14px"><button class="btn pri" onclick="openKaraoke(window._gdSeg)">🎤 卡拉OK跟讀</button><button class="btn" onclick="saveScript(window._gdSeg,this)">⭐ 加入我的講稿</button></div>`;
-}
 function vocabChip(v){
   const on=DATA.vocab.some(x=>x.word.toLowerCase()===String(v.word).toLowerCase());
   return `<button class="chip ${on?'on':''}" onclick='addVocab(${JSON.stringify(v).replace(/'/g,"&#39;")},this)'><b>${esc(v.word)}</b> <span class="muted" style="font-size:12px">${esc(v.pos||'')}</span><small>${esc(v.zh||'')}</small></button>`;
@@ -698,7 +684,7 @@ function viewIR(t,head,qi){
   $('#app').innerHTML = head + `
   <div class="crumb" style="margin-top:12px"><a href="#/task/${t.id}/ir">← 返回問題列表</a></div>
   <div class="card"><div class="muted" style="font-size:13px;font-weight:600">QUESTION ${i+1}</div><div class="bigq">${esc(q)}</div>
-    <div class="row" style="margin-top:12px"><button class="btn sm" onclick="speakWord(${esc(JSON.stringify(q))})">🔊 聽考官問題</button><button class="btn sm" onclick="openFree('${t.id}',${i})">🎙 先自己試答一分鐘（AI 評分）</button></div></div>
+    <div class="row" style="margin-top:12px"><button class="btn sm" onclick="speakWord(${esc(JSON.stringify(q))})">🔊 聽考官問題</button></div></div>
   <div class="sec-title"><span class="n">1</span><h2 class="h3">諗清楚再講 Plan your answer</h2></div>
   <div class="card">
     <label class="q">直接回答／立場 <small>（第一句就答問題）</small></label><textarea data-k="stance" placeholder="e.g. Personally, I think… / It depends on…">${esc(n.stance)}</textarea>
@@ -708,7 +694,7 @@ function viewIR(t,head,qi){
     <details style="margin-top:12px"><summary class="muted" style="cursor:pointer">💡 個人回應好用句式</summary>${IR_PHRASES.map(phraseRow).join('')}</details>
   </div>
   <div class="check" id="ircheck"></div>
-  <div class="unlock"><button class="btn acc" id="irbtn" onclick="unlockIR('${t.id}',${i})">🔓 提交，解鎖 Level 4 ＋ 5** 參考</button></div>
+  <div class="unlock"><button class="btn acc" id="irbtn" onclick="unlockIR('${t.id}',${i})">🔓 提交，睇 Level 4 ＋ 5** 講稿</button></div>
   <div id="irout"></div>`;
   document.querySelectorAll('#app textarea').forEach(el=>el.addEventListener('input',()=>{n[el.dataset.k]=el.value; save(); irCheck(t.id,i);}));
   irCheck(t.id,i);
@@ -724,43 +710,66 @@ function unlockIR(tid,i){
   const n=notes(tid).ir[i]; if(!n.unlocked && !irCheck(tid,i)) return toast('請先寫低立場同至少兩個理由');
   n.unlocked=true; save(); renderIR(TASKS[tid],i,true);
 }
-function renderIR(t,i,withCoach){
-  const n=notes(t.id).ir[i];
+function renderGDGuide(t){
+  const out=$('#gdout');
+  out.innerHTML=`
+    <div class="sec-title"><span class="n">3</span><h2 class="h3">好用回應及點子 · 跟讀練習</h2></div>
+    <p class="muted" style="margin:-4px 0 10px;font-size:14px">每段最多讀 90 秒。撳「🎤 跟讀」錄音，AI 會分析相似度、發音、讀漏或讀錯的字。</p>
+    <div id="gdlib"></div>
+    <div class="sec-title"><span class="n">4</span><h2 class="h3">萬用句子 · 跟讀練習 <small class="muted" style="font-weight:400;font-size:13px">（任何題目都用得）</small></h2></div>
+    <div class="grid g2">${UNI.map((u,k)=>`<div class="card"><b>${esc(u.title)}</b><div class="muted" style="font-size:13px;margin:2px 0 8px">${esc(u.zh)}</div>
+      <div class="script" style="font-size:15.5px">${esc(u.text)}</div>
+      <div class="row" style="margin-top:10px"><button class="btn pri sm" onclick="openKaraoke(uniObj(${k}))">🎤 跟讀</button><button class="btn sm" onclick="saveScript(uniObj(${k}),this)">⭐ 收藏</button></div></div>`).join('')}</div>
+    <div class="sec-title"><span class="n">5</span><h2 class="h3">討論框架 How a good discussion flows</h2></div>
+    <div class="card">
+      <div class="timeline"><div><b>0:00–0:30</b>開場：一位同學交代目的及次序</div><div><b>0:30–6:30</b>逐點討論：先回應上一位，再加自己觀點</div><div><b>6:30–7:30</b>Anything else / 解決分歧</div><div><b>7:30–8:00</b>總結共識</div></div>
+      <ul class="fb" style="margin:14px 0 0;padding-left:20px;font-size:15px">
+        <li>每人大約講 <b>3–4 次</b>，每次 <b>20–40 秒</b>。</li>
+        <li>每次開口：<b>回應（1 句）→ 新觀點 → 理由 → 例子 → 邀請下一位</b>。</li>
+        <li>叫組員名字、望住佢哋講，唔好望住筆記讀稿。</li></ul>
+      <details style="margin-top:12px"><summary class="muted" style="cursor:pointer">📋 句式清單（填空版）</summary>${PHRASES.map(c=>`<div style="margin-top:8px"><b style="font-size:14px">${c.k}</b>${c.list.map(phraseRow).join('')}</div>`).join('')}</details>
+    </div>`;
+  loadGDLib(t);
+}
+function uniObj(k){ const u=UNI[k]; return {title:u.title,version:'萬用句子',text:u.text,kind:'uni'}; }
+async function loadGDLib(t){
+  const box=$('#gdlib'); if(!box) return;
+  const stop=ticker(box,'正在載入本題範文…');
+  let g;
+  try{ g=await aiCached('lib_'+t.id+'_gd','lib',{taskId:t.id,part:'gd',task:taskPayload(t)}); stop(); }
+  catch(e){ stop(); box.innerHTML=`<div class="card">${errCard(e.message)}<button class="btn" style="margin-top:10px" onclick="loadGDLib(TASKS['${t.id}'])">↻ 再試</button></div>`; return; }
+  window._gdl=window._gdl||{}; window._gdl[t.id]=g;
+  box.innerHTML=`<div class="stack">${(g.gd||[]).map((x,k)=>`<div class="card"><div class="row"><span class="pill b">${k+1}</span><b class="serif" style="font-size:17px">${esc(x.title)}</b></div>
+      ${x.zh?`<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(x.zh)}</div>`:''}
+      <div class="script" style="margin-top:10px">${esc(x.text)}</div>
+      <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(gdObj('${t.id}',${k}))">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(gdObj('${t.id}',${k}),this)">⭐ 加入我的講稿</button></div></div>`).join('')}</div>
+    ${g.vocab&&g.vocab.length?`<div class="card" style="margin-top:14px"><b>主題生字</b> <small class="muted">（撳一下加入我的生字）</small><div class="chips" style="margin-top:10px">${g.vocab.map(vocabChip).join('')}</div></div>`:''}`;
+}
+function gdObj(tid,k){ const t=TASKS[tid], x=window._gdl[tid].gd[k]; return {title:(t.title||t.label)+' · '+x.title,version:'小組討論',text:x.text,taskId:tid,kind:'gd'}; }
+
+/* ---------- 個人回應 ---------- */
+function renderIR(t,i){
   $('#irout').innerHTML=`
-   <div class="sec-title"><span class="n">2</span><h2 class="h3">AI 點評你的計劃</h2><button class="btn sm ghost" style="margin-left:auto" onclick="coachIR('${t.id}',${i})">↻ 再點評</button></div>
-   <div class="card" id="ircoach">${n._coach?coachHTML(n._coach):'<div class="muted">按「再點評」取得 AI 意見。</div>'}</div>
+   <div class="sec-title"><span class="n">2</span><h2 class="h3">參考講稿 · 跟讀練習</h2></div>
+   <p class="muted" style="margin:-4px 0 10px;font-size:14px">揀 Level 4 或 5** 講稿，撳「🎤 跟讀」錄音（最多 90 秒），AI 會分析發音、語調及咬字。</p>
    <div id="irmodels"></div>`;
-  if(withCoach) coachIR(t.id,i);
   loadModels(t,i);
 }
-async function coachIR(tid,i){
-  const t=TASKS[tid]; const n=notes(tid).ir[i]; const box=$('#ircoach');
-  box.innerHTML='<div class="loading"><span class="spin"></span> AI 正在睇你的計劃…</div>';
-  try{ const r=await api('coach',{kind:'ir',task:taskPayload(t),question:t.ir[i],notes:cleanNotes(n)}); n._coach=r; save(); box.innerHTML=coachHTML(r); }
-  catch(e){ box.innerHTML=`<div class="muted">⚠️ ${esc(e.message)}</div>`; }
-}
 async function loadModels(t,i){
-  const box=$('#irmodels');
-  box.innerHTML='<div class="loading"><span class="spin"></span> 正在準備 Level 4 及 5** 參考講稿…</div>';
+  const box=$('#irmodels'); const part=i<4?'ir1':'ir2';
+  const stop=ticker(box,'正在載入 Level 4 及 5** 講稿…');
   let m;
-  try{ m=await aiCached('ir_'+t.id+'_'+i,'models',{taskId:t.id,qIndex:i,question:t.ir[i],task:taskPayload(t)}); }
-  catch(e){
-    if(DEMO){ m={plan_zh:['直接回答','理由一＋例子','理由二／讓步','總結'],level4:{script:DEMO_SCRIPTS.l4.text,notes_zh:['（示範模式範例）']},level7:{script:DEMO_SCRIPTS.l7.text,notes_zh:['（示範模式範例）']},vocab:[],_demo:1}; }
-    else { box.innerHTML=`<div class="card" style="margin-top:20px"><p class="muted">⚠️ ${esc(e.message)}</p><button class="btn" onclick="loadModels(TASKS['${t.id}'],${i})">↻ 再試</button></div>`; return; }
-  }
+  try{ m=await aiCached('lib_'+t.id+'_'+part,'lib',{taskId:t.id,part,task:taskPayload(t)}); stop(); }
+  catch(e){ stop(); box.innerHTML=`<div class="card">${errCard(e.message)}<button class="btn" style="margin-top:10px" onclick="loadModels(TASKS['${t.id}'],${i})">↻ 再試</button></div>`; return; }
+  const a=(m.ir||[]).find(x=>x.q===i);
+  if(!a){ box.innerHTML='<div class="card"><p class="muted">範文庫暫時未有呢條問題，請通知老師。</p></div>'; return; }
   const q=t.ir[i];
-  const card=(lv,lab,cls)=>{const s=m[lv]||{};const obj={title:q,version:lab,text:s.script,taskId:t.id,q:i,kind:'ir'};const k='m_'+lv;window['_'+k]=obj;
-    return `<div class="card"><div class="row"><span class="lv ${cls}">${lab}</span><span class="muted" style="font-size:13px">${(s.script||'').split(/\s+/).length} words · 約 1 分鐘</span></div>
-    <div class="script" style="margin-top:12px">${esc(s.script)}</div>
-    ${s.notes_zh&&s.notes_zh.length?`<ul class="fb" style="font-size:14.5px;padding-left:20px">${s.notes_zh.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
-    <div class="row"><button class="btn pri" onclick="openKaraoke(window._${k})">🎤 卡拉OK跟讀 ＋ AI 評分</button><button class="btn" onclick="saveScript(window._${k},this)">⭐ 加入我的講稿</button></div></div>`;};
-  box.innerHTML=`
-   ${m._demo?'<div class="note b" style="margin-top:20px">示範模式：以下為內置範例講稿（2012 Sample Paper 第 1 題），用嚟試卡拉OK功能。</div>':''}
-   <div class="sec-title"><span class="n">3</span><h2 class="h3">答題結構</h2></div>
-   <div class="card"><div class="timeline">${(m.plan_zh||[]).slice(0,4).map((x,k)=>`<div><b>Step ${k+1}</b>${esc(x)}</div>`).join('')}</div></div>
-   <div class="sec-title"><span class="n">4</span><h2 class="h3">參考講稿 Model answers</h2></div>
-   <div class="stack">${card('level4','Level 4','lv4')}${card('level7','5**','lv7')}</div>
-   ${m.vocab&&m.vocab.length?`<div class="sec-title"><span class="n">5</span><h2 class="h3">高分生字</h2></div><div class="card"><div class="chips">${m.vocab.map(vocabChip).join('')}</div></div>`:''}`;
+  const card=(lv,lab,cls,txt)=>{const obj={title:q,version:lab,text:txt,taskId:t.id,q:i,kind:'ir'};const k='m_'+lv;window['_'+k]=obj;
+    return `<div class="card"><div class="row"><span class="lv ${cls}">${lab}</span><span class="muted" style="font-size:13px">${txt.split(/\s+/).length} words · 約 ${Math.round(txt.split(/\s+/).length/2.2)} 秒</span></div>
+    <div class="script" style="margin-top:12px">${esc(txt)}</div>
+    <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(window._${k})">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(window._${k},this)">⭐ 加入我的講稿</button></div></div>`;};
+  box.innerHTML=`<div class="stack">${card('level4','Level 4','lv4',a.level4)}${card('level7','5**','lv7',a.level7)}</div>
+   ${a.notes?`<div class="note g" style="margin-top:14px"><b>✨ 5** 學習重點：</b>${esc(a.notes)}</div>`:''}`;
 }
 
 /* ===================== 收藏 ===================== */
@@ -943,8 +952,8 @@ async function startRec(){
   await countdown();
   if(!K.stream) return;
   rec.start(250); K.mode='rec'; K.t0=Date.now(); drawCtl();
-  const limit=K.free?60:180;
-  K.ti=setInterval(()=>{ const s=Math.floor((Date.now()-K.t0)/1000); const el=$('#krt'); if(el) el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  const limit=K.free?60:90;
+  K.ti=setInterval(()=>{ const s=Math.floor((Date.now()-K.t0)/1000); const el=$('#krt'); if(el) el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0')+' / 1:30'+(limit-s<=10?'（仲有 '+(limit-s)+' 秒）':'');
     if(K.free){ const left=Math.max(0,60-s); const tt=$('#ktime'); if(tt) tt.textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0'); const bar=$('#kbar'); if(bar) bar.style.width=(s/60*100)+'%'; }
     if(s>=limit) stopRec(); },250);
   const pace=LS.get('pace',130);
@@ -991,20 +1000,28 @@ async function toWav(blob){
 }
 function b64(blob){ return new Promise((ok,no)=>{ const r=new FileReader(); r.onload=()=>ok(String(r.result).split(',')[1]); r.onerror=no; r.readAsDataURL(blob); }); }
 async function sendAssess(){
-  const btn=$('#ksend'); if(btn){btn.disabled=true; btn.innerHTML='<span class="spin"></span> AI 分析中（約 15–40 秒）…';}
+  const btn=$('#ksend'); const t0=Date.now();
+  const tick=()=>{ if(!btn) return; const sec=Math.floor((Date.now()-t0)/1000); btn.innerHTML='<span class="spin"></span> AI 分析中… '+sec+' 秒'; };
+  if(btn){btn.disabled=true; tick();}
+  const iv=setInterval(tick,1000);
+  const kres=$('#kres'); if(kres) kres.innerHTML=`<div class="kres" style="text-align:center"><p style="margin:0 0 10px">AI 正在聽你的錄音（通常 10–40 秒；AI 繁忙時最多 2 分鐘）</p><button class="kbtn" onclick="cancelAI()">✕ 取消分析</button></div>`;
   try{
     let blob=K.blob, mime=(K.blob.type||'audio/webm').split(';')[0];
     try{ blob=await toWav(K.blob); mime='audio/wav'; }catch(e){ console.warn('wav convert failed',e); }
     const audio=await b64(blob);
     const s=K.s; const t=s.taskId&&TASKS[s.taskId];
     const script=K.words.map(w=>w.w).join(' ');
-    const r=await api('assess',{mode:K.free?'free':'read',audio,mime,script,version:s.version,question:K.free?s.title:(s.kind==='ir'?s.title:''),task:t?taskPayload(t):null,paper:t?t.paper.label:'',taskTitle:t?(t.title||t.label):s.title});
+    const r=await api('assess',{mode:K.free?'free':'read',audio,mime,script,version:s.version,kind:s.kind||'',question:s.kind==='ir'?s.title:'',task:t?taskPayload(t):null,paper:t?t.paper.label:'',taskTitle:t?(t.title||t.label):s.title});
     K.result=r;
     DATA.attempts.push({time:Date.now(),title:s.title,version:s.version,overall:r.overall,level:r.dse_level,summary:r.summary_zh,taskId:s.taskId||''});
     if(DATA.attempts.length>300) DATA.attempts=DATA.attempts.slice(-300); save();
-    renderResult(r);
-    if(btn) btn.innerHTML='✓ 已完成分析';
-  }catch(e){ toast(e.message); if(btn){btn.disabled=false; btn.innerHTML='📤 再提交';} }
+    clearInterval(iv); renderResult(r);
+    if(btn) btn.innerHTML='✓ 已完成（'+(r._sec||Math.round((Date.now()-t0)/1000))+' 秒）';
+  }catch(e){
+    clearInterval(iv);
+    if(kres) kres.innerHTML=`<div class="kres">${errCard(e.message).replace('class="note"','class="note" style="background:#3a2f1a;color:#ffe2a8"')}<p style="color:var(--k-dim);font-size:13px;margin:10px 0 0">錄音仍然保留，可以直接撳「再提交」。</p></div>`;
+    if(btn){btn.disabled=false; btn.innerHTML='📤 再提交';}
+  }
 }
 function clearMarks(){ document.querySelectorAll('#ktext .wd').forEach(el=>el.classList.remove('m-miss','m-unc','m-int')); }
 function findSeq(text,from){
@@ -1019,6 +1036,7 @@ function renderResult(r){
   const box=$('#kres'); if(!box) return;
   resetHL(); clearMarks();
   (r.missed||[]).forEach(m=>mark(findSeq(m.text),'m-miss','漏讀：'+(m.note_zh||'')));
+  (r.wrong||[]).forEach(m=>mark(findSeq(m.word),'m-unc','讀錯：'+(m.heard_as?'讀咗做「'+m.heard_as+'」 ':'')+(m.tip_zh||'')));
   (r.unclear||[]).forEach(m=>mark(findSeq(m.word),'m-unc',`${m.ipa||''} ${m.heard_as?'（聽落似 '+m.heard_as+'）':''} ${m.tip_zh||''}`));
   (r.intonation||[]).forEach(m=>mark(findSeq(m.phrase),'m-int',(m.issue_zh||'')+' '+(m.tip_zh||'')));
   const S=r.scores||{}; const D=r.domains||{};
@@ -1027,12 +1045,13 @@ function renderResult(r){
     : [['讀音',S.pronunciation,10],['咬字清晰',S.articulation,10],['完整度',S.completeness,10],['語調',S.intonation,10],['流暢度',S.fluency,10]];
   const L=(arr,f)=>arr&&arr.length?`<ul>${arr.map(f).join('')}</ul>`:'<p style="color:var(--k-dim);margin:0">冇發現明顯問題 👍</p>';
   box.innerHTML=`<div class="kres">
-    <div class="row" style="gap:20px;align-items:center">${ringSVG(r.overall)}<div style="flex:1;min-width:200px"><div style="color:var(--k-dim);font-size:13px">估計 DSE 程度</div><div class="serif" style="font-size:30px;font-weight:700;color:#ffd36b">${esc(r.dse_level||'–')}</div><div style="margin-top:4px">${esc(r.summary_zh||'')}</div></div></div>
+    <div class="row" style="gap:20px;align-items:center">${ringSVG(r.overall)}<div style="flex:1;min-width:200px"><div class="row" style="gap:22px"><div><div style="color:var(--k-dim);font-size:13px">與原文相似度</div><div class="serif" style="font-size:30px;font-weight:700;color:#7fd1a8">${r.similarity==null?'–':esc(r.similarity)+'%'}</div></div><div><div style="color:var(--k-dim);font-size:13px">發音估計程度</div><div class="serif" style="font-size:30px;font-weight:700;color:#ffd36b">${esc(String(r.dse_level||'–').replace(/^[^0-9]*/,'')||r.dse_level||'–')}</div></div></div><div style="margin-top:4px">${esc(r.summary_zh||'')}</div></div></div>
     <div class="bars" style="margin-top:16px">${bars.map(b=>`<div class="b"><span>${b[0]}</span><span class="tr"><i style="width:${(+b[1]||0)/b[2]*100}%"></i></span><b>${b[1]==null?'–':esc(b[1])}</b></div>`).join('')}</div>
     ${K.free?'':`<div class="legend"><span><b style="background:#ff6b5e"></b>漏讀</span><span><b style="background:#ffbe46"></b>讀音／咬字唔清</span><span><b style="background:#7fb3ff"></b>語調</span><span>（撳講稿上有顏色的字睇提示）</span></div>`}
-    ${r.transcript?`<h3>🗣 AI 聽到你講</h3><p class="serif" style="color:#cfd6df">${esc(r.transcript)}</p>`:''}
+    ${r.transcript?`<h3>🗣 AI 聽到你讀</h3><p class="serif" style="color:#cfd6df">${esc(r.transcript)}</p>`:''}
     ${r.strengths_zh&&r.strengths_zh.length?`<h3>👍 做得好</h3>${L(r.strengths_zh,x=>`<li>${esc(x)}</li>`)}`:''}
     <h3>🔤 讀音／咬字唔清</h3>${L(r.unclear,x=>`<li><b class="serif" style="font-size:17px">${esc(x.word)}</b> <span style="color:#ffd36b">${esc(x.ipa||'')}</span> ${x.heard_as?`<span style="color:var(--k-dim)">（聽落似「${esc(x.heard_as)}」）</span>`:''}<br>${esc(x.tip_zh||'')} <button class="kbtn" style="padding:3px 10px;font-size:12px" onclick="speakWord(${esc(JSON.stringify(x.word))})">🔊</button></li>`)}
+    ${r.wrong&&r.wrong.length?`<h3>❌ 讀錯咗</h3><ul>${r.wrong.map(x=>`<li><b class="serif" style="font-size:17px">${esc(x.word)}</b> ${x.heard_as?`<span style="color:var(--k-dim)">（讀咗做「${esc(x.heard_as)}」）</span>`:''}<br>${esc(x.tip_zh||'')} <button class="kbtn" style="padding:3px 10px;font-size:12px" onclick="speakWord(${esc(JSON.stringify(x.word))})">🔊</button></li>`).join('')}</ul>`:''}
     ${K.free?'':`<h3>⛔ 讀漏咗</h3>${L(r.missed,x=>`<li><b class="serif">${esc(x.text)}</b> ${esc(x.note_zh||'')}</li>`)}
     <h3>🎵 語調 Intonation</h3>${L(r.intonation,x=>`<li><b class="serif">“${esc(x.phrase)}”</b> — ${esc(x.issue_zh||'')}<br><span style="color:#a9c8ff">${esc(x.tip_zh||'')}</span></li>`)}`}
     ${r.language_fix&&r.language_fix.length?`<h3>✏️ 語言修正</h3><ul>${r.language_fix.map(x=>`<li><s style="color:#ff9c92">${esc(x.from)}</s> → <b style="color:#7fd1a8">${esc(x.to)}</b></li>`).join('')}</ul>`:''}
