@@ -15,7 +15,7 @@
  *  API 網址會喺同學登入時由後端自動傳過嚟，唔使填。
  * ========================================================= */
 window.APP_CONFIG = {
-  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycbzfrPr7lzvM_OXbGEjwekY34Ye-UkLhn0taHl7WkY8iv6thIYvqQEK3xMzyutGX8-sF6A/exec'
+  LOGIN_URL: 'https://script.google.com/a/macros/elearn.jccssyl.edu.hk/s/AKfycby2X3JBsLy71_4F8FzGOor01agAdvdi-8VRJJtyh6yLDLfvMSoIAIzfK5FPc1Ml4X5Y-A/exec'
 };
 </script>
 <style>
@@ -262,9 +262,19 @@ label.q small{font-weight:400;color:var(--muted)}
 .wsteps div{background:var(--card2);border-radius:12px;padding:10px 12px;font-size:14.5px}
 .wsteps b{color:var(--accent);margin-right:6px}
 .ttsb{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;background:var(--card2);color:var(--muted);border:1px solid var(--line)}
+.ttsb.big{display:inline-flex;gap:8px;align-items:baseline;font-size:14px;padding:6px 14px;border-radius:12px;border:2px solid var(--line)}
+.ttsb.big b{font-size:14.5px}.ttsb.big span{font-weight:500;font-size:12.5px;opacity:.85}
+.ttsb.big.on{background:#2f9e67;color:#fff;border-color:#2f9e67;box-shadow:0 3px 10px rgba(47,158,103,.3)}
+.ttsb.big.off{background:var(--card2);color:var(--muted);border-style:dashed}
+.tleg{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px}.tleg.on{background:#2f9e67;color:#fff}.tleg.off{background:var(--card2);color:var(--muted);border:1px dashed var(--line)}
 .ttsb.on{background:var(--sage-soft);color:var(--sage);border-color:transparent}
 .ttsb.off{background:var(--card2);color:var(--muted)}
 .khead .ttsb{background:#263243;color:#9fb0c4;border-color:transparent}.khead .ttsb.on{background:#1d3a2c;color:#7fd1a8}
+.ttsl{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;margin-top:8px;padding:10px 14px;border-radius:14px;font-size:14px}
+.ttsl.on{background:var(--sage-soft);color:var(--sage)}
+.ttsl.off{background:var(--card2);color:var(--muted);border:1px dashed var(--line)}
+.ttsl.dark{display:block;margin-top:18px;font-family:"Noto Sans TC",sans-serif;font-size:14px}
+.ttsl.dark.on{background:#1d3a2c;color:#9fe3bf}.ttsl.dark.off{background:#1f2a38;color:#9fb0c4;border-color:#33425a}
 .tbar{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
 .tbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd36b,#ff8a59);animation:tfill linear forwards}
 @keyframes tfill{to{width:92%}}
@@ -443,7 +453,15 @@ async function aiCached(key,action,payload){
 }
 function taskPayload(t){return {id:t.id,title:t.title||t.label,intro:t.intro,text:t.text,task:t.task,points:t.points};}
 function notes(tid){return DATA.notes[tid]||(DATA.notes[tid]={gd:{},ir:{}});}
-function speakWord(w){ if(!('speechSynthesis' in window))return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(w); const v=pickVoice(); if(v){u.voice=v;u.lang=v.lang} else u.lang='en-GB'; u.rate=.9; speechSynthesis.speak(u); }
+let _clip=null;
+async function speakWord(w){
+  w=String(w||'').replace(/___/g,'something').trim(); if(!w) return;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  if(_clip){ try{_clip.pause()}catch(e){} _clip=null; }
+  try{ const url=await getReal(w,true); if(url){ _clip=new Audio(url); _clip.play().catch(()=>{}); return; } }catch(e){ ttsFail(e); }
+  speakBrowser(w);
+}
+function speakBrowser(w){ if(!('speechSynthesis' in window))return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(w); const v=pickVoice(); if(v){u.voice=v;u.lang=v.lang} else u.lang='en-GB'; u.rate=.9; speechSynthesis.speak(u); }
 let VOICES=[];
 function loadVoices(){ VOICES=(speechSynthesis.getVoices()||[]).filter(v=>/^en/i.test(v.lang)); }
 if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
@@ -727,11 +745,11 @@ function renderGDGuide(t){
   const out=$('#gdout');
   out.innerHTML=`
     <div class="sec-title"><span class="n">3</span><h2 class="h3">好用回應及點子 · 跟讀練習</h2></div>
-    <p class="muted" style="margin:-4px 0 10px;font-size:14px">每段最多讀 90 秒。撳「🎤 跟讀」錄音，AI 會分析相似度、發音、讀漏或讀錯的字。<br><span class="ttsb on">🎙 已有真人發音</span> 即刻播放　<span class="ttsb off">🤖 未有真人發音</span> 第一次播放會即時製作（約 5–15 秒）</p>
+    <p class="muted" style="margin:-4px 0 10px;font-size:14px">每段最多讀 90 秒。撳「🎤 跟讀」錄音，AI 會分析相似度、發音、讀漏或讀錯的字。<br><span class="tleg on">✅ 已有真人發音</span> 即刻播放　<span class="tleg off">⏳ 未有真人發音</span> 第一次播放會即時製作（約 5–15 秒）</p>
     <div id="gdlib"></div>
     <div class="sec-title"><span class="n">4</span><h2 class="h3">萬用句子 · 跟讀練習 <small class="muted" style="font-weight:400;font-size:13px">（任何題目都用得）</small></h2></div>
-    <div class="grid g2">${UNI.map((u,k)=>`<div class="card"><div class="row"><b>${esc(u.title)}</b><span style="margin-left:auto">${ttsBadge(u.text)}</span></div><div class="muted" style="font-size:13px;margin:2px 0 8px">${esc(u.zh)}</div>
-      <div class="script" style="font-size:15.5px">${esc(u.text)}</div>
+    <div class="grid g2">${UNI.map((u,k)=>`<div class="card">${ttsBadge(u.text)}<div class="row" style="margin-top:8px"><b>${esc(u.title)}</b></div><div class="muted" style="font-size:13px;margin:2px 0 8px">${esc(u.zh)}</div>
+      <div class="script" style="font-size:15.5px">${esc(u.text)}</div>${ttsLine(u.text)}
       <div class="row" style="margin-top:10px"><button class="btn pri sm" onclick="openKaraoke(uniObj(${k}))">🎤 跟讀</button><button class="btn sm" onclick="saveScript(uniObj(${k}),this)">⭐ 收藏</button></div></div>`).join('')}</div>
     <div class="sec-title"><span class="n">5</span><h2 class="h3">討論框架 How a good discussion flows</h2></div>
     <div class="card">
@@ -752,9 +770,9 @@ async function loadGDLib(t){
   try{ g=await aiCached('lib_'+t.id+'_gd','lib',{taskId:t.id,part:'gd',task:taskPayload(t)}); stop(); }
   catch(e){ stop(); box.innerHTML=`<div class="card">${errCard(e.message)}<button class="btn" style="margin-top:10px" onclick="loadGDLib(TASKS['${t.id}'])">↻ 再試</button></div>`; return; }
   window._gdl=window._gdl||{}; window._gdl[t.id]=g;
-  box.innerHTML=`<div class="stack">${(g.gd||[]).map((x,k)=>`<div class="card"><div class="row"><span class="pill b">${k+1}</span><b class="serif" style="font-size:17px">${esc(x.title)}</b><span style="margin-left:auto">${ttsBadge(x.text)}</span></div>
+  box.innerHTML=`<div class="stack">${(g.gd||[]).map((x,k)=>`<div class="card">${ttsBadge(x.text)}<div class="row" style="margin-top:10px"><span class="pill b">${k+1}</span><b class="serif" style="font-size:17px">${esc(x.title)}</b></div>
       ${x.zh?`<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(x.zh)}</div>`:''}
-      <div class="script" style="margin-top:10px">${esc(x.text)}</div>
+      <div class="script" style="margin-top:10px">${esc(x.text)}</div>${ttsLine(x.text)}
       <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(gdObj('${t.id}',${k}))">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(gdObj('${t.id}',${k}),this)">⭐ 加入我的講稿</button></div></div>`).join('')}</div>
     ${g.vocab&&g.vocab.length?`<div class="card" style="margin-top:14px"><b>主題生字</b> <small class="muted">（撳一下加入我的生字）</small><div class="chips" style="margin-top:10px">${g.vocab.map(vocabChip).join('')}</div></div>`:''}`;
 }
@@ -778,8 +796,8 @@ async function loadModels(t,i){
   if(!a){ box.innerHTML='<div class="card"><p class="muted">範文庫暫時未有呢條問題，請通知老師。</p></div>'; return; }
   const q=t.ir[i];
   const card=(lv,lab,cls,txt)=>{const obj={title:q,version:lab,text:txt,taskId:t.id,q:i,kind:'ir'};const k='m_'+lv;window['_'+k]=obj;
-    return `<div class="card"><div class="row"><span class="lv ${cls}">${lab}</span><span class="muted" style="font-size:13px">${txt.split(/\s+/).length} words · 約 ${Math.round(txt.split(/\s+/).length/2.2)} 秒</span><span style="margin-left:auto">${ttsBadge(txt)}</span></div>
-    <div class="script" style="margin-top:12px">${esc(txt)}</div>
+    return `<div class="card">${ttsBadge(txt)}<div class="row" style="margin-top:10px"><span class="lv ${cls}">${lab}</span><span class="muted" style="font-size:13px">${txt.split(/\s+/).length} words · 約 ${Math.round(txt.split(/\s+/).length/2.2)} 秒</span></div>
+    <div class="script" style="margin-top:12px">${esc(txt)}</div>${ttsLine(txt)}
     <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(window._${k})">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(window._${k},this)">⭐ 加入我的講稿</button></div></div>`;};
   box.innerHTML=`<div class="stack">${card('level4','Level 4','lv4',a.level4)}${card('level7','5**','lv7',a.level7)}</div>
    ${a.notes?`<div class="note g" style="margin-top:14px"><b>✨ 5** 學習重點：</b>${esc(a.notes)}</div>`:''}`;
@@ -810,7 +828,7 @@ function viewVocab(){
 function filterVocab(q){q=q.toLowerCase();document.querySelectorAll('.vc').forEach(e=>e.style.display=e.dataset.s.includes(q)?'':'none');}
 function viewScripts(){
   $('#app').innerHTML=`<div class="sec-title" style="margin-top:28px"><h1 class="h1 serif">我的講稿</h1><span class="pill" style="margin-left:auto">${DATA.scripts.length} 份</span></div>
-  ${DATA.scripts.length?`<div class="grid g2">${DATA.scripts.map((s,i)=>`<div class="card"><div class="row"><span class="lv ${s.version==='5**'?'lv7':'lv4'}">${esc(s.version)}</span><span class="pill">${s.kind==='gd'?'小組討論':s.kind==='uni'?'萬用句子':'個人回應'}</span><span style="margin-left:auto">${ttsBadge(s.text)}</span></div>
+  ${DATA.scripts.length?`<div class="grid g2">${DATA.scripts.map((s,i)=>`<div class="card">${ttsBadge(s.text)}<div class="row" style="margin-top:10px"><span class="lv ${s.version==='5**'?'lv7':'lv4'}">${esc(s.version)}</span><span class="pill">${s.kind==='gd'?'小組討論':s.kind==='uni'?'萬用句子':'個人回應'}</span></div>
     <div class="serif" style="font-weight:700;font-size:18px;margin:10px 0 6px">${esc(s.title)}</div>
     <div class="muted" style="font-size:14px;max-height:4.8em;overflow:hidden">${esc(s.text)}</div>
     <div class="row" style="margin-top:12px"><button class="btn pri sm" onclick="openKaraoke(DATA.scripts[${i}])">🎤 跟讀</button>${s.taskId&&TASKS[s.taskId]?`<a class="btn sm" href="#/task/${s.taskId}/${s.kind==='gd'?'gd':'ir'}">📄 原題</a>`:''}<button class="btn sm ghost" onclick="if(confirm('刪除這份講稿？')){DATA.scripts.splice(${i},1);save();viewScripts()}">🗑</button></div></div>`).join('')}</div>`:'<div class="empty">仲未有講稿。喺範文下面撳「⭐ 加入我的講稿」。</div>'}`;
@@ -858,9 +876,9 @@ function openKaraoke(s){
   const b=buildWords(s);
   Object.assign(K,{s,words:b.words,sentences:b.sentences,idx:-1,mode:'idle',blob:null,free:false,result:null});
   const ov=document.createElement('div'); ov.className='kov'; ov.id='kov';
-  ov.innerHTML=`<div class="khead"><div class="t"><b class="serif">${esc(s.title||'')}</b><small>${esc(s.version||'')} · 撳任何字可聽讀音或加入生字</small></div><span id="kvoice" class="ttsb ${TTS.st[ttsKey(s.text||'')]?'on':'off'}">${TTS.st[ttsKey(s.text||'')]?'🎙 真人發音':'🤖 未有真人發音'}</span><button class="kx" onclick="closeKaraoke()">✕</button></div>
+  ov.innerHTML=`<div class="khead"><div class="t"><b class="serif">${esc(s.title||'')}</b><small>${esc(s.version||'')} · 撳任何字可聽讀音或加入生字</small></div><span id="kvoice" class="ttsb ${TTS.st[ttsKey(s.text||'')]?'on':'off'}">${TTS.st[ttsKey(s.text||'')]?'✅ 已有真人發音':'⏳ 未有真人發音'}</span><button class="kx" onclick="closeKaraoke()">✕</button></div>
    <div class="kprog"><i id="kbar"></i></div>
-   <div class="kbody" id="kbody"><div class="inner"><div class="ktext plain" id="ktext">${b.html}</div><div id="kres"></div></div></div>
+   <div class="kbody" id="kbody"><div class="inner"><div class="ktext plain" id="ktext">${b.html}</div><div id="kline" class="ttsl dark ${TTS.st[ttsKey(s.text||'')]?'on':'off'}">${TTS.st[ttsKey(s.text||'')]?'✅ <b>已有真人發音</b> · 撳下面「🎙 聽真人示範」即刻播放':'⏳ <b>未有真人發音</b> · 撳「🔊 聽示範朗讀」會自動製作（只需一次），之後即刻播放'}</div><div id="kres"></div></div></div>
    <div class="kctl" id="kctl"></div>`;
   document.body.appendChild(ov); document.body.style.overflow='hidden';
   $('#ktext').addEventListener('click',e=>{const w=e.target.closest('.wd'); if(w && K.mode==='idle') wordPop(w,+w.dataset.i);});
@@ -921,19 +939,48 @@ function guideTimer(fromIdx,wpm,onDone){
 /* ===================== 真人發音（Cloud TTS，生成一次存入 Drive）===================== */
 const TTS={st:{},url:{},voice:{}};          // text -> true/false ; text -> objectURL ; text -> voice name
 function ttsKey(t){ return String(t||'').replace(/\s+/g,' ').trim(); }
-function ttsBadge(text){
-  const k=ttsKey(text); window._ttsT=window._ttsT||[]; let i=window._ttsT.indexOf(k); if(i<0){window._ttsT.push(k); i=window._ttsT.length-1;}
-  const st=TTS.st[k];
-  return `<span class="ttsb ${st===true?'on':st===false?'off':''}" data-ti="${i}">${st===true?'🎙 已有真人發音':st===false?'🤖 未有真人發音':'… 檢查發音'}</span>`;
+function ttsIdx(text){ const k=ttsKey(text); window._ttsT=window._ttsT||[]; let i=window._ttsT.indexOf(k); if(i<0){window._ttsT.push(k); i=window._ttsT.length-1;} return i; }
+function badgeHTML(st){ return st===true?'<b>✅ 已有真人發音</b><span>隨時可聽</span>':st===false?'<b>⏳ 未有真人發音</b><span>第一次播放會製作</span>':'<b>… 檢查發音中</b>'; }
+function ttsBadge(text){ const i=ttsIdx(text), st=TTS.st[window._ttsT[i]]; return `<div class="ttsb big ${st===true?'on':st===false?'off':''}" data-ti="${i}">${badgeHTML(st)}</div>`; }
+function ttsLine(text){
+  const i=ttsIdx(text), k=window._ttsT[i];
+  const st=TTS.st[k], est=Math.round(4+k.split(/\s+/).length/18);
+  return `<div class="ttsl ${st===true?'on':'off'}" data-ti="${i}" data-est="${est}">${ttsLineInner(st,est)}</div>`;
+}
+function ttsLineInner(st,est){
+  return st===true?`<span>✅ <b>已有真人發音</b>，隨時可聽</span><button class="btn sm" onclick="playLine(this)">▶ 播放真人發音</button>`
+    :`<span>⏳ <b>未有真人發音</b>：撳「▶ 製作」約 ${est} 秒，只需製作一次，之後所有同學即刻聽到</span><button class="btn sm" onclick="playLine(this)">▶ 製作並播放</button>`;
+}
+async function playLine(btn){
+  const box=btn.closest('.ttsl'), t=window._ttsT[+box.dataset.ti];
+  if(_clip){ try{_clip.pause()}catch(e){} }
+  try{ const url=await getReal(t,true); if(url){ _clip=new Audio(url); _clip.play().catch(()=>{}); } else speakBrowser(t); }
+  catch(e){ ttsFail(e); speakBrowser(t); }
 }
 async function markTTS(){
-  const els=[...document.querySelectorAll('.ttsb')]; if(!els.length) return;
-  const need=[...new Set(els.map(e=>window._ttsT[+e.dataset.ti]).filter(t=>TTS.st[t]===undefined))];
+  const els=[...document.querySelectorAll('[data-ti]')]; if(!els.length) return;
+  const need=[...new Set(els.map(e=>window._ttsT[+e.dataset.ti]).filter(t=>t&&TTS.st[t]===undefined))];
   for(let i=0;i<need.length;i+=40){
-    try{ const r=await api('ttsStatus',{texts:need.slice(i,i+40)}); r.list.forEach((x,j)=>TTS.st[need[i+j]]=x.has); }catch(e){ return; }
+    try{ const r=await api('ttsStatus',{texts:need.slice(i,i+40)}); r.list.forEach((x,j)=>{ if(TTS.st[need[i+j]]!==true) TTS.st[need[i+j]]=!!x.has; }); }catch(e){ break; }
   }
-  document.querySelectorAll('.ttsb').forEach(e=>{ const st=TTS.st[window._ttsT[+e.dataset.ti]]; if(st===undefined) return;
-    e.className='ttsb '+(st?'on':'off'); e.textContent=st?'🎙 已有真人發音':'🤖 未有真人發音'; });
+  paintTTS();
+}
+function paintTTS(){
+  document.querySelectorAll('.ttsl[data-ti]').forEach(e=>{ const st=TTS.st[window._ttsT[+e.dataset.ti]]; if(st===undefined) return;
+    e.className='ttsl '+(st?'on':'off'); e.innerHTML=ttsLineInner(st,+e.dataset.est); });
+  document.querySelectorAll('.ttsb[data-ti]').forEach(e=>{ const st=TTS.st[window._ttsT[+e.dataset.ti]]; if(st===undefined) return;
+    e.className='ttsb big '+(st?'on':'off'); e.innerHTML=badgeHTML(st); });
+  const kv=$('#kvoice'); if(kv&&K.words&&K.words.length){ const st=TTS.st[ttsKey(K.words.map(w=>w.w).join(' '))]; if(st){ kv.className='ttsb on'; kv.textContent='✅ 已有真人發音'; } }
+}
+function ttsFail(e){
+  const m=String(e&&e.message||e), r=(m.match(/［已嘗試：(.*)］/)||[])[1]||m;
+  let why='';
+  if(/OAuth|API keys are not supported|401|403|PERMISSION|permission/i.test(r)) why='老師嘅 Google Cloud 真人發音設定未完成';
+  else if(/額度/.test(r)) why='本月免費真人發音額度已用完';
+  else if(/未知動作/.test(r)) why='後端未更新（請老師部署新版本）';
+  toast('⚠️ 未能製作真人發音'+(why?'：'+why:'')+'，今次改用預設發音');
+  const t=$('#toast'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),6000);
+  console.warn('TTS error:',m);
 }
 function b64toUrl(b64){ const bin=atob(b64), a=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return URL.createObjectURL(new Blob([a],{type:'audio/mpeg'})); }
 function ttsPopup(text){
@@ -965,7 +1012,7 @@ async function getReal(text,showPopup){
   if(showPopup && TTS.st[k]!==true){ pop=ttsPopup(k); pop.el.querySelector('#tskip').onclick=()=>{skipped=true; pop.close();}; }
   try{
     const r=await api('tts',{text:k});
-    TTS.url[k]=b64toUrl(r.audio); TTS.st[k]=true; TTS.voice[k]=r.voice||'';
+    TTS.url[k]=b64toUrl(r.audio); TTS.st[k]=true; TTS.voice[k]=r.voice||''; paintTTS();
     if(pop){ pop.close(); if(!r.cached) toast('✅ 真人發音已儲存，下次即刻播放'); }
     markTTS();
     return skipped?null:TTS.url[k];
@@ -988,12 +1035,12 @@ async function toggleTTS(){
   try{
     const url=await getReal(text,true);
     if(url){ setVoiceTag(true,TTS.voice[ttsKey(text)]); return playReal(url); }
-  }catch(e){ toast('真人發音暫時未能使用，改用預設發音'); console.warn(e); }
+  }catch(e){ ttsFail(e); }
   setVoiceTag(false);
   if(!('speechSynthesis' in window)){ drawCtl(); return toast('此瀏覽器不支援朗讀'); }
   K.mode='tts'; drawCtl(); speakSentence(0);
 }
-function setVoiceTag(real,name){ const el=$('#kvoice'); if(el){ el.className='ttsb '+(real?'on':'off'); el.textContent=real?'🎙 真人發音'+(name?'（'+name+'）':''):'🤖 預設發音'; } }
+function setVoiceTag(real,name){ const kl=$('#kline'); if(kl&&real){ kl.className='ttsl dark on'; kl.innerHTML='✅ <b>已有真人發音</b>'+(name?'（'+esc(name)+'）':'')+' · 已儲存，下次即刻播放'; } const el=$('#kvoice'); if(el){ el.className='ttsb '+(real?'on':'off'); el.textContent=real?'✅ 真人發音'+(name?'（'+name+'）':''):'🔈 預設發音'; } }
 
 function speakSentence(si){
   if(K.mode!=='tts') return;
