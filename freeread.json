@@ -1,0 +1,886 @@
+[
+ {
+  "id": "2012s-1",
+  "pid": "2012s",
+  "paper": "2012 Sample Paper",
+  "taskId": "2012s-Sample1",
+  "q": 8,
+  "topic": "A question of privacy?",
+  "question": "Why is freedom of expression important for the media?",
+  "text": "In my view, freedom of expression is the lifeblood of the media. First and foremost, it allows journalists to act as a watchdog. If reporters can investigate freely, they can expose wrongdoing, whether it's a company cutting corners on food safety or an official misusing public money. Without that freedom, these problems would simply be swept under the carpet. On top of that, a free press gives ordinary citizens a voice. When newspapers can publish a wide range of opinions, readers are exposed to different perspectives and can make up their own minds, rather than being spoon-fed a single point of view. Admittedly, this freedom can be abused, as we saw with the hidden-camera photos in the article. But the answer is responsible journalism and clear ethical guidelines, not silencing the media altogether. So, in a nutshell, freedom of expression keeps society informed, honest and open.",
+  "notes": "開首用「the lifeblood of」形容最核心的重要性；用「act as a watchdog」帶出傳媒監察角色並配具體例子；「Admittedly…But…」先讓步再反駁，展示成熟、平衡的思考；最後用「in a nutshell」加三個形容詞總結。",
+  "vocab": [
+   {
+    "word": "watchdog",
+    "pos": "n.",
+    "zh": "監察者"
+   },
+   {
+    "word": "sweep under the carpet",
+    "pos": "phr.",
+    "zh": "掩飾問題"
+   },
+   {
+    "word": "spoon-fed",
+    "pos": "adj.",
+    "zh": "被灌輸的"
+   },
+   {
+    "word": "in a nutshell",
+    "pos": "phr.",
+    "zh": "總括而言"
+   }
+  ],
+  "words": 146
+ },
+ {
+  "id": "2012s-2",
+  "pid": "2012s",
+  "paper": "2012 Sample Paper",
+  "taskId": "2012s-Sample2",
+  "q": 8,
+  "topic": "Body art expresses individuality",
+  "question": "What other ways do young people try to 'stand out' from the crowd?",
+  "text": "Young people today have plenty of ways to stand out, and many of them go far beyond tattoos or body piercings. The most obvious one, I'd say, is social media. Lots of teenagers carefully curate their Instagram feeds or post creative short videos, hoping to build a unique personal brand and maybe even go viral. Another common way is fashion. Walk through Mong Kok on a Saturday and you'll see students mixing vintage clothes with streetwear, or dyeing their hair bright colours to express their personality. Apart from appearance, some young people stand out through their talents, for example by busking, joining dance competitions or launching small online businesses. Personally, I think the healthiest way is the last one, because it's based on skills rather than looks. At the end of the day, what truly makes someone memorable is what they can do, not just how they look.",
+  "notes": "用「go far beyond」擴闊題目範圍；三個方法分類清晰（社交媒體、時裝、才能）；「Walk through Mong Kok…」用祈使句帶出生動的本地畫面；最後加入個人評價及「At the end of the day」作結，令答案有深度。",
+  "vocab": [
+   {
+    "word": "curate",
+    "pos": "v.",
+    "zh": "精心挑選、策劃"
+   },
+   {
+    "word": "go viral",
+    "pos": "phr.",
+    "zh": "在網上爆紅"
+   },
+   {
+    "word": "busking",
+    "pos": "n.",
+    "zh": "街頭表演"
+   },
+   {
+    "word": "memorable",
+    "pos": "adj.",
+    "zh": "令人難忘的"
+   }
+  ],
+  "words": 148
+ },
+ {
+  "id": "2012p-1",
+  "pid": "2012p",
+  "paper": "2012 Practice Paper",
+  "taskId": "2012p-1.3",
+  "q": 3,
+  "topic": "Out of this world",
+  "question": "What information about human beings do you think might be useful for aliens to learn?",
+  "text": "That's a fascinating question. If aliens wanted to understand us, I think the most useful thing for them to learn would be how we communicate. Humans speak thousands of languages, but we also share universal signals, like smiling to show friendliness. Knowing this would help them avoid misunderstandings and, hopefully, a conflict on their first visit. Secondly, they should learn about our basic needs. We need oxygen, clean water and food to survive, so they would realise how fragile our planet is and why we care so much about protecting it. Last but not least, I'd want them to learn about our art and music. Science might explain how our bodies work, but a symphony by Beethoven or a Cantonese pop ballad would show them what it really means to be human: we feel, we dream and we create. So, if I had to sum it up, I'd say communication, survival and creativity.",
+  "notes": "「That's a fascinating question.」自然開場，爭取思考時間；「Secondly / Last but not least」令結構一目了然；用「we feel, we dream and we create」三連句營造節奏感；結尾用三個名詞概括全段。",
+  "vocab": [
+   {
+    "word": "universal",
+    "pos": "adj.",
+    "zh": "普遍的、通用的"
+   },
+   {
+    "word": "fragile",
+    "pos": "adj.",
+    "zh": "脆弱的"
+   },
+   {
+    "word": "ballad",
+    "pos": "n.",
+    "zh": "抒情歌曲"
+   },
+   {
+    "word": "sum it up",
+    "pos": "phr.",
+    "zh": "總結"
+   }
+  ],
+  "words": 153
+ },
+ {
+  "id": "2012p-2",
+  "pid": "2012p",
+  "paper": "2012 Practice Paper",
+  "taskId": "2012p-1.1",
+  "q": 6,
+  "topic": "Teens far too materialistic",
+  "question": "Why do some parents give in to their children's demands?",
+  "text": "I think there are several reasons why parents give in so easily. The main one is guilt. In Hong Kong, many parents work long hours and barely see their kids during the week, so buying them the latest gadget feels like a way to make up for lost time. Another reason is peer pressure, but on the parents' side. If every other child in the class has a new smartphone, parents worry that their son or daughter will feel left out, or even be bullied. On top of that, some parents simply want to avoid a scene. When a child throws a tantrum in a shopping mall, saying yes is the quickest way to end the embarrassment. However, I'd argue that constantly giving in does more harm than good, because children never learn the value of money or the importance of waiting for what they want. So setting clear limits is actually an act of love.",
+  "notes": "三個原因（內疚、家長之間的比較、怕出醜）各有香港例子；「peer pressure, but on the parents' side」把常見詞語活用，顯出思考層次；「does more harm than good」及「an act of love」令結論有說服力。",
+  "vocab": [
+   {
+    "word": "give in",
+    "pos": "phr. v.",
+    "zh": "讓步、屈服"
+   },
+   {
+    "word": "make up for",
+    "pos": "phr. v.",
+    "zh": "彌補"
+   },
+   {
+    "word": "throw a tantrum",
+    "pos": "phr.",
+    "zh": "發脾氣、撒野"
+   },
+   {
+    "word": "do more harm than good",
+    "pos": "phr.",
+    "zh": "弊多於利"
+   }
+  ],
+  "words": 156
+ },
+ {
+  "id": "2012-1",
+  "pid": "2012",
+  "paper": "2012 DSE",
+  "taskId": "2012-7.1",
+  "q": 7,
+  "topic": "Home swapping vacations",
+  "question": "If someone stayed in your home, what do you think they would learn about life in Hong Kong?",
+  "text": "If someone stayed in my flat, the first thing they would learn is that space is a luxury in Hong Kong. My family of four lives in a flat of around four hundred square feet, so every corner is used cleverly, from foldable tables to storage under the beds. They'd quickly realise how resourceful Hong Kong people are. Secondly, they would discover how fast-paced our lives are. My parents leave home before eight and often don't get back until after dinner time, and I'm usually rushing between school, tutorial classes and extracurricular activities. Having said that, they would also see the warm side of Hong Kong life. On Sundays, my whole family goes for dim sum with my grandparents, and our neighbours always greet each other in the lift. So my guest would leave with a balanced picture: life here is crowded and hectic, but it's also full of warmth and family values.",
+  "notes": "用自己家庭的具體細節（四百呎、摺枱、星期日飲茶）回答，真實又生動；「space is a luxury」是精警開場；「Having said that」帶出另一面，最後以「a balanced picture」總結正反兩面。",
+  "vocab": [
+   {
+    "word": "luxury",
+    "pos": "n.",
+    "zh": "奢侈品"
+   },
+   {
+    "word": "resourceful",
+    "pos": "adj.",
+    "zh": "足智多謀的"
+   },
+   {
+    "word": "fast-paced",
+    "pos": "adj.",
+    "zh": "節奏急速的"
+   },
+   {
+    "word": "hectic",
+    "pos": "adj.",
+    "zh": "忙亂的"
+   }
+  ],
+  "words": 153
+ },
+ {
+  "id": "2012-2",
+  "pid": "2012",
+  "paper": "2012 DSE",
+  "taskId": "2012-6.3",
+  "q": 0,
+  "topic": "Teaching English via video games",
+  "question": "Would you enjoy learning English through video games?",
+  "text": "Absolutely, I think I'd really enjoy it, and I'm sure many of my classmates would too. For one thing, video games are naturally motivating. When I'm playing a role-playing game, I'm willing to read long instructions and dialogues because I genuinely want to know what happens next. Compared with memorising vocabulary lists, that feels far less like a chore. What's more, many online games require players to communicate with teammates from all over the world. In those situations, you have to use English quickly and naturally, which is great practice for real-life conversations, and even for the speaking exam. That said, I don't think games should replace traditional lessons completely. Some games use very simple or even incorrect language, so teachers would need to choose them carefully and combine them with grammar and writing practice. If it's done well, though, learning through games could make English lessons both fun and effective.",
+  "notes": "第一個字「Absolutely」即時表明立場；「For one thing / What's more」串連理由；「That said」加入保留意見，避免答案太片面；最後用條件句「If it's done well, though…」作結。",
+  "vocab": [
+   {
+    "word": "motivating",
+    "pos": "adj.",
+    "zh": "能推動學習的"
+   },
+   {
+    "word": "chore",
+    "pos": "n.",
+    "zh": "苦差"
+   },
+   {
+    "word": "genuinely",
+    "pos": "adv.",
+    "zh": "真心地"
+   },
+   {
+    "word": "that said",
+    "pos": "phr.",
+    "zh": "話雖如此"
+   }
+  ],
+  "words": 151
+ },
+ {
+  "id": "2013-1",
+  "pid": "2013",
+  "paper": "2013 DSE",
+  "taskId": "2013-9.1",
+  "q": 4,
+  "topic": "Hong Kong's heartbeat",
+  "question": "What other methods can help promote a city's traditions?",
+  "text": "I believe there are quite a few effective ways to keep a city's traditions alive. One of the best methods is to bring traditions into schools. For instance, students could learn to make lanterns before the Mid-Autumn Festival or join a lion dance workshop. When young people experience traditions first-hand, they're far more likely to appreciate them and pass them on. Another approach is to make use of social media. Cultural groups could invite popular YouTubers to film short videos about events like the Tai Hang Fire Dragon Dance or the Cheung Chau Bun Festival. These clips can reach thousands of viewers in a matter of hours, including tourists. Finally, I think traditions can be given a modern twist, such as combining Cantonese opera with pop music or selling traditional snacks in trendy packaging. In short, if we make traditions interactive and relevant, they won't just survive, they'll thrive.",
+  "notes": "三個方法（學校、社交媒體、現代化）都有香港節慶例子；「first-hand」「a modern twist」是高分詞組；結尾「they won't just survive, they'll thrive」用對比及押韻，令人印象深刻。",
+  "vocab": [
+   {
+    "word": "first-hand",
+    "pos": "adv.",
+    "zh": "親身地"
+   },
+   {
+    "word": "pass on",
+    "pos": "phr. v.",
+    "zh": "傳承"
+   },
+   {
+    "word": "a modern twist",
+    "pos": "phr.",
+    "zh": "現代新意"
+   },
+   {
+    "word": "thrive",
+    "pos": "v.",
+    "zh": "蓬勃發展"
+   }
+  ],
+  "words": 149
+ },
+ {
+  "id": "2013-2",
+  "pid": "2013",
+  "paper": "2013 DSE",
+  "taskId": "2013-7.1",
+  "q": 3,
+  "topic": "Dogs: replacement children?",
+  "question": "Do you think students should keep a class pet at school?",
+  "text": "Personally, I think keeping a class pet is a wonderful idea, as long as it's well planned. The biggest benefit is that it teaches students responsibility. If classmates take turns feeding a rabbit or cleaning a fish tank, they learn that looking after another living thing requires commitment, not just enthusiasm. In addition, a pet can create a more relaxed atmosphere. Being around animals can reduce stress, and let's face it, Hong Kong students are under a lot of pressure. However, there are some practical concerns we can't ignore. Some students may be allergic to fur, and someone has to take care of the animal during long holidays. So I'd suggest choosing a low-maintenance pet, like goldfish or a tortoise, and drawing up a clear care schedule with the teacher. If these issues are handled properly, a class pet could make school a warmer and more caring place.",
+  "notes": "立場加條件「as long as it's well planned」，一開始已顯示審慎思考；「commitment, not just enthusiasm」對比鮮明；「let's face it」令語氣自然；指出問題後即提出解決方法，展現解難能力。",
+  "vocab": [
+   {
+    "word": "commitment",
+    "pos": "n.",
+    "zh": "承擔"
+   },
+   {
+    "word": "allergic",
+    "pos": "adj.",
+    "zh": "過敏的"
+   },
+   {
+    "word": "low-maintenance",
+    "pos": "adj.",
+    "zh": "容易打理的"
+   },
+   {
+    "word": "draw up",
+    "pos": "phr. v.",
+    "zh": "制定"
+   }
+  ],
+  "words": 148
+ },
+ {
+  "id": "2014-1",
+  "pid": "2014",
+  "paper": "2014 DSE",
+  "taskId": "2014-1.1",
+  "q": 1,
+  "topic": "Is email still cool?",
+  "question": "Do you find writing emails easy or difficult?",
+  "text": "Honestly, I'd say it depends on who I'm writing to. Writing an email to a friend is a piece of cake. I can be casual, use short sentences and even add an emoji or two without worrying about it. But writing a formal email, say to a teacher or a company, is a different story. I have to think carefully about the tone, the greeting and how to end politely. For example, last year I emailed an organisation to apply for a volunteering position, and I must have rewritten the first paragraph five times, because I wanted to sound confident without being pushy. Another difficulty is keeping it concise. In school, we're trained to write long compositions, but in an email, people expect you to get to the point quickly. So overall, I find emails easy to write but hard to write well, and I think it's a skill all students should practise before they enter the workplace.",
+  "notes": "「it depends on…」把簡單是非題變成有層次的答案；「a piece of cake / a different story」形成對比；親身經歷「rewritten the first paragraph five times」令內容可信；結尾「easy to write but hard to write well」是精警句。",
+  "vocab": [
+   {
+    "word": "a piece of cake",
+    "pos": "phr.",
+    "zh": "輕而易舉"
+   },
+   {
+    "word": "pushy",
+    "pos": "adj.",
+    "zh": "咄咄逼人的"
+   },
+   {
+    "word": "concise",
+    "pos": "adj.",
+    "zh": "簡潔的"
+   },
+   {
+    "word": "get to the point",
+    "pos": "phr.",
+    "zh": "開門見山"
+   }
+  ],
+  "words": 158
+ },
+ {
+  "id": "2014-2",
+  "pid": "2014",
+  "paper": "2014 DSE",
+  "taskId": "2014-7.2",
+  "q": 0,
+  "topic": "Are LEGO figures getting angrier?",
+  "question": "What toys did you play with when you were small?",
+  "text": "When I was small, my absolute favourite toys were building blocks. I remember spending whole afternoons on the living room floor, building towers, cars and even a model of our housing estate. Looking back, I think those blocks taught me patience and creativity, because whenever something collapsed, I had to work out how to make it stronger. I also loved playing board games with my cousins, especially Monopoly. We would play for hours during Chinese New Year, and although we argued a lot, it taught me how to count money and, more importantly, how to lose gracefully. Compared with children today, who often grow up with tablets in their hands, my toys were quite simple. But I believe that's exactly why they were so valuable. They encouraged me to use my imagination and to interact face to face with other people, rather than just staring at a screen.",
+  "notes": "回憶題用「I remember… / Looking back…」自然敘述；不只講玩甚麼，更講學到甚麼（耐性、輸得起）；最後與現今小朋友比較，把個人經驗提升到社會觀察。",
+  "vocab": [
+   {
+    "word": "collapse",
+    "pos": "v.",
+    "zh": "倒塌"
+   },
+   {
+    "word": "work out",
+    "pos": "phr. v.",
+    "zh": "想出辦法"
+   },
+   {
+    "word": "gracefully",
+    "pos": "adv.",
+    "zh": "有風度地"
+   },
+   {
+    "word": "interact",
+    "pos": "v.",
+    "zh": "互動"
+   }
+  ],
+  "words": 148
+ },
+ {
+  "id": "2015-1",
+  "pid": "2015",
+  "paper": "2015 DSE",
+  "taskId": "2015-4.1",
+  "q": 2,
+  "topic": "Online writer rises to fame",
+  "question": "Have you ever posted things you have written online?",
+  "text": "Yes, I have, and it's been a really rewarding experience. Last summer, I started a small blog where I write short reviews of books and films. At first, I was quite nervous about sharing my writing, because I worried that people might leave harsh comments. But to my surprise, most readers were really supportive, and some even recommended other books I might enjoy. Posting online has actually improved my writing a lot. Since I know that real people are reading my work, I pay more attention to my word choice and try to make my ideas clear and engaging. It's very different from writing an essay that only my teacher will see. Of course, I'm always careful about my privacy. I never reveal my full name or my school, and I think twice before I post anything. Overall, I'd encourage other students to give it a try, because it's a great way to build confidence.",
+  "notes": "直接答「Yes, I have」再講感受；用「At first… But to my surprise…」講出心態轉變；加入私隱提醒，顯示成熟思考；最後鼓勵別人嘗試，自然收結。",
+  "vocab": [
+   {
+    "word": "rewarding",
+    "pos": "adj.",
+    "zh": "有意義、有回報的"
+   },
+   {
+    "word": "harsh",
+    "pos": "adj.",
+    "zh": "尖刻的"
+   },
+   {
+    "word": "engaging",
+    "pos": "adj.",
+    "zh": "引人入勝的"
+   },
+   {
+    "word": "think twice",
+    "pos": "phr.",
+    "zh": "三思"
+   }
+  ],
+  "words": 155
+ },
+ {
+  "id": "2015-2",
+  "pid": "2015",
+  "paper": "2015 DSE",
+  "taskId": "2015-9.3",
+  "q": 7,
+  "topic": "Adopt-A-Grandparent",
+  "question": "When your grandparents were young, how different were their lives from yours?",
+  "text": "Their lives were completely different from mine. My grandfather grew up in a squatter hut in Kowloon in the 1960s, and his family of seven shared just one room. He had to leave school at fourteen to work in a factory, so he could help support his younger brothers and sisters. In contrast, I live in a comfortable flat, I can focus on my studies, and my biggest worry is probably my exam results. Technology is another huge difference. My grandparents wrote letters that took weeks to arrive, while I can video-call my friends overseas in seconds. However, I'd say their lives had some advantages too. My grandmother often tells me how close-knit their neighbourhood was. People left their doors open and shared food with each other. Nowadays, we barely know our neighbours' names. So although our lives are more convenient, I think we've lost some of that sense of community.",
+  "notes": "用祖父母的真實背景（寮屋、十四歲做工廠）作強烈對比；「In contrast / while」清楚表達比較；「However…」指出舊日的好處，令答案不流於表面；以「sense of community」作深刻結論。",
+  "vocab": [
+   {
+    "word": "squatter hut",
+    "pos": "n.",
+    "zh": "寮屋"
+   },
+   {
+    "word": "in contrast",
+    "pos": "phr.",
+    "zh": "相比之下"
+   },
+   {
+    "word": "close-knit",
+    "pos": "adj.",
+    "zh": "關係緊密的"
+   },
+   {
+    "word": "sense of community",
+    "pos": "phr.",
+    "zh": "社區歸屬感"
+   }
+  ],
+  "words": 151
+ },
+ {
+  "id": "2016-1",
+  "pid": "2016",
+  "paper": "2016 DSE",
+  "taskId": "2016-1.1",
+  "q": 6,
+  "topic": "Life on HK$4 a day",
+  "question": "Do you think charity work can make a difference?",
+  "text": "Yes, I firmly believe charity work can make a real difference, even if it's on a small scale. Take food banks as an example. In Hong Kong, many elderly people live alone on very low incomes, and a simple meal box delivered by volunteers means they don't have to choose between food and paying their bills. For them, that difference is enormous. Charity work also changes the volunteers themselves. When I visited a subdivided flat with my school's social service club, I was shocked by how cramped it was. That experience made me far more aware of poverty, and I've become much more careful about not wasting things. Having said that, charity alone can't solve deep-rooted problems like housing shortages. That requires long-term policies. So I'd say charity is like a bandage. It doesn't cure the illness, but it eases the pain and gives people hope.",
+  "notes": "「firmly believe… even if it's on a small scale」立場鮮明又有分寸；兩個角度（受助者、義工本身）；指出慈善的限制；結尾用「bandage」比喻，是 5** 常見的高層次表達。",
+  "vocab": [
+   {
+    "word": "on a small scale",
+    "pos": "phr.",
+    "zh": "小規模地"
+   },
+   {
+    "word": "subdivided flat",
+    "pos": "n.",
+    "zh": "劏房"
+   },
+   {
+    "word": "deep-rooted",
+    "pos": "adj.",
+    "zh": "根深蒂固的"
+   },
+   {
+    "word": "ease",
+    "pos": "v.",
+    "zh": "紓緩"
+   }
+  ],
+  "words": 146
+ },
+ {
+  "id": "2016-2",
+  "pid": "2016",
+  "paper": "2016 DSE",
+  "taskId": "2016-9.3",
+  "q": 3,
+  "topic": "Text walking lanes for smartphone addicts",
+  "question": "Are you aware of your surroundings when you use your smartphone?",
+  "text": "To be honest, not always, and I think that's true for a lot of young people. When I'm replying to messages on the MTR or walking to school, I sometimes get so absorbed in my phone that I hardly notice what's happening around me. Once, I nearly walked straight into a lamp post in Causeway Bay, which was quite embarrassing! But that incident was a real wake-up call. Now I've made a rule for myself. I never use my phone while crossing the road, and if I need to send an urgent message, I step aside and stop walking first. I also turn the volume down when I'm wearing earphones, so I can still hear the traffic. In my opinion, being aware of our surroundings isn't just about our own safety. It's also about being considerate to others, since phone zombies can easily bump into elderly people or block busy walkways.",
+  "notes": "誠實作答「To be honest, not always」更自然可信；小故事（撞燈柱）增加趣味；「wake-up call」帶出改變；最後由個人安全延伸到體諒他人，提升答案層次。",
+  "vocab": [
+   {
+    "word": "absorbed",
+    "pos": "adj.",
+    "zh": "全神貫注的"
+   },
+   {
+    "word": "wake-up call",
+    "pos": "n.",
+    "zh": "警號"
+   },
+   {
+    "word": "considerate",
+    "pos": "adj.",
+    "zh": "體貼的"
+   },
+   {
+    "word": "phone zombie",
+    "pos": "n.",
+    "zh": "低頭族"
+   }
+  ],
+  "words": 151
+ },
+ {
+  "id": "2017-1",
+  "pid": "2017",
+  "paper": "2017 DSE",
+  "taskId": "2017-8.1",
+  "q": 3,
+  "topic": "It is important to fight age discrimination",
+  "question": "What age do you think people should retire at?",
+  "text": "I don't think there should be one fixed retirement age for everyone, but if I had to choose, I'd say around sixty-five. Nowadays, people in Hong Kong live longer and stay healthy for longer, so retiring at sixty can feel too early. Many sixty-year-olds are still energetic and have decades of valuable experience to share with younger colleagues. Keeping them in the workforce could also ease the labour shortage caused by our ageing population. On the other hand, some jobs are physically demanding, such as construction work or cleaning. For these workers, working until seventy would be unfair and even dangerous. That's why I'd support a more flexible system, where people can choose to retire earlier or work part-time after sixty-five, depending on their health and their job. In the end, retirement should be about giving people a choice, not forcing them out of work simply because of a number.",
+  "notes": "先質疑問題前設，再給具體答案，顯示批判思考；個人、社會（人口老化）兩個層面；「On the other hand」考慮體力勞動者；提出「flexible system」作解決方案。",
+  "vocab": [
+   {
+    "word": "workforce",
+    "pos": "n.",
+    "zh": "勞動人口"
+   },
+   {
+    "word": "labour shortage",
+    "pos": "n.",
+    "zh": "人手短缺"
+   },
+   {
+    "word": "physically demanding",
+    "pos": "adj.",
+    "zh": "體力要求高的"
+   },
+   {
+    "word": "flexible",
+    "pos": "adj.",
+    "zh": "有彈性的"
+   }
+  ],
+  "words": 150
+ },
+ {
+  "id": "2017-2",
+  "pid": "2017",
+  "paper": "2017 DSE",
+  "taskId": "2017-4.2",
+  "q": 4,
+  "topic": "Tattoo you? Did you know the legal age?",
+  "question": "What do you think is worse: underage smoking or underage driving?",
+  "text": "That's a tough one, but I'd say underage driving is worse. The main reason is that it puts other people's lives at risk immediately. A fifteen-year-old behind the wheel has no proper training and very little judgement, so a single mistake could kill a pedestrian or another driver in seconds. Underage smoking, on the other hand, mainly harms the smoker, and the damage builds up over many years. Of course, I'm not saying smoking is harmless. It's highly addictive, and teenagers who start early often find it very hard to quit, which can lead to lung disease later in life. Second-hand smoke also affects family members. But when we compare the two, the danger of driving is more direct and more serious. So while both behaviours should be strongly discouraged, I think underage driving deserves stricter punishment, because the consequences can be instant and irreversible.",
+  "notes": "比較題先清楚選邊「I'd say underage driving is worse」；用「immediately vs builds up over many years」比較兩者；「Of course, I'm not saying…」避免偏頗；結尾「instant and irreversible」用兩個有力形容詞。",
+  "vocab": [
+   {
+    "word": "behind the wheel",
+    "pos": "phr.",
+    "zh": "駕駛中"
+   },
+   {
+    "word": "judgement",
+    "pos": "n.",
+    "zh": "判斷力"
+   },
+   {
+    "word": "addictive",
+    "pos": "adj.",
+    "zh": "令人上癮的"
+   },
+   {
+    "word": "irreversible",
+    "pos": "adj.",
+    "zh": "無法挽回的"
+   }
+  ],
+  "words": 145
+ },
+ {
+  "id": "2018-1",
+  "pid": "2018",
+  "paper": "2018 DSE",
+  "taskId": "2018-3.3",
+  "q": 2,
+  "topic": "Hong Kong Fire Services seeking recruits",
+  "question": "What do you think is the worst part of being a firefighter?",
+  "text": "In my opinion, the worst part of being a firefighter isn't the physical danger, although that's obviously a huge concern. I think it's the emotional burden. Firefighters often arrive at terrible scenes, such as a burning building where people are trapped, or a serious car accident. Even when they do everything they can, they can't always save everyone, and those memories can stay with them for years. Some may even suffer from stress disorders. On top of that, the working hours are extremely tough. They have to work long shifts, including nights and public holidays, which means missing family dinners and important celebrations. And of course, every time the alarm goes off, they have to be ready to risk their lives within minutes. That's why I have enormous respect for them. It takes not only physical strength, but also mental toughness to do this job day after day.",
+  "notes": "「isn't… I think it's…」先否定明顯答案，再提出更深入的觀點，令考官眼前一亮；「not only… but also…」總結；以表達敬意收結，有感染力。",
+  "vocab": [
+   {
+    "word": "emotional burden",
+    "pos": "n.",
+    "zh": "情緒負擔"
+   },
+   {
+    "word": "shift",
+    "pos": "n.",
+    "zh": "輪班"
+   },
+   {
+    "word": "go off",
+    "pos": "phr. v.",
+    "zh": "（警鐘）響起"
+   },
+   {
+    "word": "mental toughness",
+    "pos": "n.",
+    "zh": "心理韌力"
+   }
+  ],
+  "words": 148
+ },
+ {
+  "id": "2018-2",
+  "pid": "2018",
+  "paper": "2018 DSE",
+  "taskId": "2018-4.3",
+  "q": 4,
+  "topic": "No attendance, no problem",
+  "question": "Are video lessons the same as face-to-face lessons?",
+  "text": "No, I don't think they're the same, although they both have their strengths. Video lessons are certainly convenient. During the pandemic, we had online classes for months, and I liked being able to replay a recording when I didn't understand a difficult maths topic. That flexibility is really helpful for revision. However, face-to-face lessons offer something that videos can't replace, and that's real interaction. In a classroom, I can put up my hand and ask a question straight away, and the teacher can tell from our faces whether we're confused. It's also much easier to stay focused. At home, it's very tempting to check my phone or even fall asleep in front of the screen. Not to mention the social side of school, like discussing ideas with classmates or doing group projects together. So I'd say video lessons are a great supplement, but they can never fully replace learning in a real classroom.",
+  "notes": "先承認網課好處再指出不足，論證平衡；親身疫情網課經驗增加說服力；「Not to mention…」補充額外理由；結論用「a great supplement」準確定位。",
+  "vocab": [
+   {
+    "word": "flexibility",
+    "pos": "n.",
+    "zh": "靈活性"
+   },
+   {
+    "word": "tempting",
+    "pos": "adj.",
+    "zh": "誘人的"
+   },
+   {
+    "word": "not to mention",
+    "pos": "phr.",
+    "zh": "更不用說"
+   },
+   {
+    "word": "supplement",
+    "pos": "n.",
+    "zh": "補充"
+   }
+  ],
+  "words": 153
+ },
+ {
+  "id": "2019-1",
+  "pid": "2019",
+  "paper": "2019 DSE",
+  "taskId": "2019-8.3",
+  "q": 6,
+  "topic": "Should there be an age limit for political leaders?",
+  "question": "Should there be age limits on leaders?",
+  "text": "This is quite a controversial issue, but on balance, I don't think strict age limits are necessary. What really matters is a leader's ability, judgement and health, not the number on their ID card. Some older leaders bring decades of experience and a calm, steady approach, which can be extremely valuable during a crisis. Setting an upper age limit could mean losing these talented people for no good reason. That said, I can understand why some people support age limits. Leaders make decisions that shape the future, so it's important that they understand the needs of younger generations. Instead of an age limit, though, I'd prefer other safeguards, such as regular health checks and fixed terms of office, so that no one stays in power for too long. In this way, we can keep experienced leaders while still making room for fresh ideas.",
+  "notes": "「controversial… on balance」顯示權衡後才下結論；「not the number on their ID card」生動地表達「年齡只是數字」；先理解反對意見再提出替代方案（健康檢查、任期），兼顧雙方。",
+  "vocab": [
+   {
+    "word": "controversial",
+    "pos": "adj.",
+    "zh": "具爭議性的"
+   },
+   {
+    "word": "on balance",
+    "pos": "phr.",
+    "zh": "權衡之下"
+   },
+   {
+    "word": "safeguard",
+    "pos": "n.",
+    "zh": "保障措施"
+   },
+   {
+    "word": "term of office",
+    "pos": "n.",
+    "zh": "任期"
+   }
+  ],
+  "words": 143
+ },
+ {
+  "id": "2019-2",
+  "pid": "2019",
+  "paper": "2019 DSE",
+  "taskId": "2019-6.2",
+  "q": 0,
+  "topic": "Translation apps",
+  "question": "What language would you like to learn?",
+  "text": "If I could learn any language, I'd choose Japanese. I've been a big fan of Japanese culture since I was a child, especially anime and Japanese food, and I'd love to watch my favourite shows without relying on subtitles. Another reason is that Japan is one of the most popular travel destinations for Hong Kong people. My family goes there almost every year, and I'd really like to chat with local people, ask for directions or order food confidently, instead of just pointing at pictures on the menu. On top of that, learning Japanese could be helpful for my future career, since many Japanese companies have offices in Hong Kong. Some people might say that translation apps make learning languages unnecessary, but I disagree. An app can translate words, but it can't help you build real friendships or understand the culture behind the language. So Japanese would definitely be my first choice.",
+  "notes": "三個理由（興趣、旅遊、事業）由個人到將來；「instead of just pointing at pictures」畫面感強；主動回應題目文章（翻譯 app），把答案扣回題目主題。",
+  "vocab": [
+   {
+    "word": "rely on",
+    "pos": "phr. v.",
+    "zh": "依賴"
+   },
+   {
+    "word": "subtitles",
+    "pos": "n.",
+    "zh": "字幕"
+   },
+   {
+    "word": "destination",
+    "pos": "n.",
+    "zh": "目的地"
+   },
+   {
+    "word": "definitely",
+    "pos": "adv.",
+    "zh": "肯定地"
+   }
+  ],
+  "words": 152
+ },
+ {
+  "id": "2023-1",
+  "pid": "2023",
+  "paper": "2023 DSE",
+  "taskId": "2023-8.3",
+  "q": 1,
+  "topic": "Harbourside concert series",
+  "question": "Do you like going to music concerts?",
+  "text": "Yes, I absolutely love going to concerts. There's something magical about hearing music live. When I went to a Cantopop concert at the Hong Kong Coliseum last year, the moment the lights went down and thousands of fans started singing together, I got goosebumps. You simply can't get that kind of atmosphere from listening to songs on your phone. Concerts are also a great way to bond with friends. We spent weeks preparing for that night, making signs and learning the lyrics, so it became a really special memory for all of us. Admittedly, concert tickets can be quite expensive, and sometimes they sell out within minutes. That's why I think free outdoor events, like the harbourside concerts in the article, are a brilliant idea. They make live music accessible to everyone, regardless of their budget, and they bring a lively atmosphere to the city.",
+  "notes": "用「the moment the lights went down…I got goosebumps」描寫感受，非常生動；「Admittedly」提出門票貴的問題，再自然扣回題目文章的免費音樂會；詞彙如 accessible、regardless of 屬高分用字。",
+  "vocab": [
+   {
+    "word": "goosebumps",
+    "pos": "n.",
+    "zh": "雞皮疙瘩"
+   },
+   {
+    "word": "bond with",
+    "pos": "phr. v.",
+    "zh": "建立感情"
+   },
+   {
+    "word": "sell out",
+    "pos": "phr. v.",
+    "zh": "售罄"
+   },
+   {
+    "word": "accessible",
+    "pos": "adj.",
+    "zh": "容易接觸到的"
+   }
+  ],
+  "words": 145
+ },
+ {
+  "id": "2023-2",
+  "pid": "2023",
+  "paper": "2023 DSE",
+  "taskId": "2023-4.2",
+  "q": 6,
+  "topic": "Adaptability quotient",
+  "question": "Do you consider yourself a risk taker?",
+  "text": "I wouldn't call myself a big risk taker, but I'm definitely becoming more willing to step out of my comfort zone. By nature, I'm quite a cautious person. I like to plan ahead, and I usually think carefully before making decisions. But I've realised that playing it safe all the time can mean missing out on great opportunities. For example, last year I signed up for a public speaking competition, even though I was terrified of speaking in front of a large audience. I didn't win, but the experience boosted my confidence enormously, and that's partly why I feel more relaxed in speaking exams now. So I'd describe myself as a calculated risk taker. I'm happy to take risks that help me grow, like trying a new activity or meeting new people, but I avoid risks that could seriously harm my health or my future. I think that balance is what adaptability is all about.",
+  "notes": "不是簡單答 yes / no，而是描述「正在改變」的自己；「comfort zone / play it safe / calculated risk」一系列地道詞組；用演講比賽例子支持；最後扣回題目主題 adaptability。",
+  "vocab": [
+   {
+    "word": "comfort zone",
+    "pos": "n.",
+    "zh": "舒適區"
+   },
+   {
+    "word": "cautious",
+    "pos": "adj.",
+    "zh": "謹慎的"
+   },
+   {
+    "word": "play it safe",
+    "pos": "phr.",
+    "zh": "穩陣行事"
+   },
+   {
+    "word": "calculated risk",
+    "pos": "n.",
+    "zh": "經過計算的風險"
+   }
+  ],
+  "words": 155
+ },
+ {
+  "id": "2024-1",
+  "pid": "2024",
+  "paper": "2024 DSE",
+  "taskId": "2024-4.3",
+  "q": 4,
+  "topic": "The smells of Hong Kong",
+  "question": "What smells remind you of your home?",
+  "text": "Whenever I smell garlic and ginger being fried in a wok, I immediately think of home. My mum cooks almost every evening, and that sizzling smell drifting out of the kitchen is a sign that the whole family is about to sit down for dinner. It gives me a real sense of comfort and belonging. Another smell that reminds me of home is the herbal soup my grandmother makes, especially in winter. It's a bit bitter, but it always makes me feel looked after. Interestingly, some less pleasant smells remind me of home too. I live near a wet market, so the smell of fresh fish and vegetables in the morning is part of my daily routine. It isn't exactly fragrant, but it represents the busy, down-to-earth side of Hong Kong life. So I'd say the smells of home are a mixture of food, family and neighbourhood, and I'm sure I'd miss them if I ever moved away.",
+  "notes": "用感官描寫（sizzling、drifting、bitter）令答案有畫面；「Interestingly」加入意想不到的角度（街市氣味）；結尾用三個名詞總結，再加一句感性說話。",
+  "vocab": [
+   {
+    "word": "sizzling",
+    "pos": "adj.",
+    "zh": "滋滋作響的"
+   },
+   {
+    "word": "drift",
+    "pos": "v.",
+    "zh": "飄散"
+   },
+   {
+    "word": "sense of belonging",
+    "pos": "phr.",
+    "zh": "歸屬感"
+   },
+   {
+    "word": "down-to-earth",
+    "pos": "adj.",
+    "zh": "樸實的"
+   }
+  ],
+  "words": 158
+ },
+ {
+  "id": "2024-2",
+  "pid": "2024",
+  "paper": "2024 DSE",
+  "taskId": "2024-4.2",
+  "q": 7,
+  "topic": "About the Book Club",
+  "question": "What's the difference between reading for pleasure and reading for study?",
+  "text": "I think the biggest difference lies in motivation and freedom. When I read for pleasure, I choose the book myself, perhaps a detective novel or a fantasy series, and I read it simply because I enjoy it. I can skip the boring parts, read at my own pace, and even stop halfway if I lose interest. Reading for study, on the other hand, is much more goal-oriented. I have to read set texts or textbooks closely, take notes, and remember key facts for tests, so it often feels more like work than relaxation. Having said that, the two types of reading support each other. Reading for pleasure helps me build my vocabulary and improve my reading speed, which makes studying easier. And sometimes, a topic I study at school, like the history of space travel, sparks my interest and leads me to read more for fun. So ideally, students should do both.",
+  "notes": "第一句「the biggest difference lies in…」直接點出比較重點；「on the other hand」清楚對比；「Having said that, the two… support each other」由比較升華到兩者互補，屬高層次思考。",
+  "vocab": [
+   {
+    "word": "lie in",
+    "pos": "phr. v.",
+    "zh": "在於"
+   },
+   {
+    "word": "at my own pace",
+    "pos": "phr.",
+    "zh": "按自己步伐"
+   },
+   {
+    "word": "goal-oriented",
+    "pos": "adj.",
+    "zh": "以目標為本的"
+   },
+   {
+    "word": "spark",
+    "pos": "v.",
+    "zh": "激發"
+   }
+  ],
+  "words": 152
+ },
+ {
+  "id": "2025-1",
+  "pid": "2025",
+  "paper": "2025 DSE",
+  "taskId": "2025-2.2",
+  "q": 4,
+  "topic": "American teenagers are driving less",
+  "question": "Do you think it is necessary for teenagers to learn to drive in Hong Kong?",
+  "text": "Personally, I don't think it's necessary for most teenagers in Hong Kong to learn to drive. First of all, our public transport system is one of the best in the world. With the MTR, buses and minibuses, we can get almost anywhere quickly and cheaply, so a car isn't really needed for daily life. Secondly, owning a car here is extremely expensive. Apart from the car itself, there are parking fees, petrol and tunnel tolls, and finding a parking space in busy districts like Mong Kok can be a nightmare. On top of that, fewer cars on the road means less traffic congestion and air pollution, which benefits everyone. Having said that, learning to drive can still be a useful skill for some people, for example those who want to become delivery drivers or who plan to study overseas. So I'd say it's a personal choice, rather than a necessity.",
+  "notes": "三個理由（交通方便、成本高、環境）層層遞進；香港例子（港鐵、隧道費、旺角泊車）具體；「Having said that」承認例外情況；最後「a personal choice, rather than a necessity」精準回應題目的 necessary。",
+  "vocab": [
+   {
+    "word": "tunnel toll",
+    "pos": "n.",
+    "zh": "隧道費"
+   },
+   {
+    "word": "nightmare",
+    "pos": "n.",
+    "zh": "惡夢"
+   },
+   {
+    "word": "traffic congestion",
+    "pos": "n.",
+    "zh": "交通擠塞"
+   },
+   {
+    "word": "necessity",
+    "pos": "n.",
+    "zh": "必需品"
+   }
+  ],
+  "words": 150
+ },
+ {
+  "id": "2025-2",
+  "pid": "2025",
+  "paper": "2025 DSE",
+  "taskId": "2025-7.3",
+  "q": 1,
+  "topic": "An unusual career of the future",
+  "question": "Where is your favourite place to shop?",
+  "text": "My favourite place to shop is actually Sham Shui Po, rather than a fancy shopping mall. I love it because it's full of character. There are streets that specialise in different things, like fabrics, electronics and handmade leather goods, so it feels like a treasure hunt every time I go. Another reason is that the prices are much more reasonable, which is important for a student on a tight budget. I once bought a second-hand film camera there for just a few hundred dollars, and the shop owner even taught me how to use it. That kind of personal service is something you rarely get in big chain stores. Of course, shopping online is more convenient, and I do buy things like books on the internet. But for me, shopping isn't just about buying things. It's about the experience, the people and the stories behind each little shop.",
+  "notes": "「actually… rather than a fancy shopping mall」答案有個性，令考官留下印象；「a treasure hunt」比喻生動；以買菲林相機的小故事作例子；最後由購物昇華到「experience, people and stories」。",
+  "vocab": [
+   {
+    "word": "full of character",
+    "pos": "phr.",
+    "zh": "充滿特色"
+   },
+   {
+    "word": "specialise in",
+    "pos": "phr. v.",
+    "zh": "專門經營"
+   },
+   {
+    "word": "treasure hunt",
+    "pos": "n.",
+    "zh": "尋寶"
+   },
+   {
+    "word": "on a tight budget",
+    "pos": "phr.",
+    "zh": "預算緊絀"
+   }
+  ],
+  "words": 148
+ }
+]
