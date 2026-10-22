@@ -805,7 +805,7 @@ function renderGDGuide(t){
     <div class="sec-title"><span class="n">4</span><h2 class="h3">萬用句子 · 跟讀練習 <small class="muted" style="font-weight:400;font-size:13px">（任何題目都用得）</small></h2></div>
     <div class="grid g2">${UNI.map((u,k)=>`<div class="card">${ttsBadge(u.text)}<div class="row" style="margin-top:8px"><b>${esc(u.title)}</b></div><div class="muted" style="font-size:13px;margin:2px 0 8px">${esc(u.zh)}</div>
       <div class="script" style="font-size:15.5px">${ww(u.text)}</div>${trBox(u.text)}${ttsLine(u.text)}
-      <div class="row" style="margin-top:10px"><button class="btn pri sm" onclick="openKaraoke(uniObj(${k}))">🎤 跟讀</button><button class="btn sm" onclick="saveScript(uniObj(${k}),this)">⭐ 收藏</button></div></div>`).join('')}</div>
+      <div class="row" style="margin-top:10px"><button class="btn pri sm" onclick="openKaraoke(uniObj(${k}))">🎤 播放及跟讀</button><button class="btn sm" onclick="saveScript(uniObj(${k}),this)">⭐ 收藏</button></div></div>`).join('')}</div>
     <div class="sec-title"><span class="n">5</span><h2 class="h3">討論框架 How a good discussion flows</h2></div>
     <div class="card">
       <div class="timeline"><div><b>0:00–0:30</b>開場：一位同學交代目的及次序</div><div><b>0:30–6:30</b>逐點討論：先回應上一位，再加自己觀點</div><div><b>6:30–7:30</b>Anything else / 解決分歧</div><div><b>7:30–8:00</b>總結共識</div></div>
@@ -828,7 +828,7 @@ async function loadGDLib(t){
   box.innerHTML=`<div class="stack">${(g.gd||[]).map((x,k)=>`<div class="card">${ttsBadge(x.text)}<div class="row" style="margin-top:10px"><span class="pill b">${k+1}</span><b class="serif" style="font-size:17px">${esc(x.title)}</b></div>
       ${x.zh?`<div class="muted" style="font-size:13.5px;margin-top:4px">${esc(x.zh)}</div>`:''}
       <div class="script" style="margin-top:10px">${ww(x.text)}</div>${trBox(x.text)}${ttsLine(x.text)}
-      <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(gdObj('${t.id}',${k}))">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(gdObj('${t.id}',${k}),this)">⭐ 加入我的講稿</button></div></div>`).join('')}</div>
+      <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(gdObj('${t.id}',${k}))">🎤 播放及跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(gdObj('${t.id}',${k}),this)">⭐ 加入我的講稿</button></div></div>`).join('')}</div>
     ${g.vocab&&g.vocab.length?`<div class="card" style="margin-top:14px"><b>主題生字</b> <small class="muted">（撳一下加入我的生字）</small><div class="chips" style="margin-top:10px">${g.vocab.map(vocabChip).join('')}</div></div>`:''}`;
 }
 function gdObj(tid,k){ setTimeout(markTTS,0); const t=TASKS[tid], x=window._gdl[tid].gd[k]; return {title:(t.title||t.label)+' · '+x.title,version:'小組討論',text:x.text,taskId:tid,kind:'gd'}; }
@@ -853,7 +853,7 @@ async function loadModels(t,i){
   const card=(lv,lab,cls,txt)=>{const obj={title:q,version:lab,text:txt,taskId:t.id,q:i,kind:'ir'};const k='m_'+lv;window['_'+k]=obj;
     return `<div class="card">${ttsBadge(txt)}<div class="row" style="margin-top:10px"><span class="lv ${cls}">${lab}</span><span class="muted" style="font-size:13px">${txt.split(/\s+/).length} words · 約 ${Math.round(txt.split(/\s+/).length/2.2)} 秒</span></div>
     <div class="script" style="margin-top:12px">${ww(txt)}</div>${trBox(txt)}${ttsLine(txt)}
-    <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(window._${k})">🎤 跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(window._${k},this)">⭐ 加入我的講稿</button></div></div>`;};
+    <div class="row" style="margin-top:10px"><button class="btn pri" onclick="openKaraoke(window._${k})">🎤 播放及跟讀 ＋ AI 分析</button><button class="btn" onclick="saveScript(window._${k},this)">⭐ 加入我的講稿</button></div></div>`;};
   box.innerHTML=`<div class="stack">${card('level4','Level 4','lv4',a.level4)}${card('level7','5**','lv7',a.level7)}</div>
    ${a.notes?`<div class="note g" style="margin-top:14px"><b>✨ 5** 學習重點：</b>${esc(a.notes)}</div>`:''}`;
   markTTS();
@@ -886,7 +886,7 @@ function viewScripts(){
   ${DATA.scripts.length?`<div class="grid g2">${DATA.scripts.map((s,i)=>`<div class="card">${ttsBadge(s.text)}<div class="row" style="margin-top:10px"><span class="lv ${s.version==='5**'?'lv7':'lv4'}">${esc(s.version)}</span><span class="pill">${s.kind==='gd'?'小組討論':s.kind==='uni'?'萬用句子':'個人回應'}</span></div>
     <div class="serif" style="font-weight:700;font-size:18px;margin:10px 0 6px">${esc(s.title)}</div>
     <div class="muted" style="font-size:14px;max-height:4.8em;overflow:hidden">${esc(s.text)}</div>
-    <div class="row" style="margin-top:12px"><button class="btn pri sm" onclick="openKaraoke(DATA.scripts[${i}])">🎤 跟讀</button>${s.taskId&&TASKS[s.taskId]?`<a class="btn sm" href="#/task/${s.taskId}/${s.kind==='gd'?'gd':'ir'}">📄 原題</a>`:''}<button class="btn sm ghost" onclick="if(confirm('刪除這份講稿？')){DATA.scripts.splice(${i},1);save();viewScripts()}">🗑</button></div></div>`).join('')}</div>`:'<div class="empty">仲未有講稿。喺範文下面撳「⭐ 加入我的講稿」。</div>'}`;
+    <div class="row" style="margin-top:12px"><button class="btn pri sm" onclick="openKaraoke(DATA.scripts[${i}])">🎤 播放及跟讀</button>${s.taskId&&TASKS[s.taskId]?`<a class="btn sm" href="#/task/${s.taskId}/${s.kind==='gd'?'gd':'ir'}">📄 原題</a>`:''}<button class="btn sm ghost" onclick="if(confirm('刪除這份講稿？')){DATA.scripts.splice(${i},1);save();viewScripts()}">🗑</button></div></div>`).join('')}</div>`:'<div class="empty">仲未有講稿。喺範文下面撳「⭐ 加入我的講稿」。</div>'}`;
   markTTS();
 }
 function viewHistory(){
@@ -933,7 +933,7 @@ function openKaraoke(s,view){
   const has=TTS.st[ttsKey(s.text||'')];
   const ov=document.createElement('div'); ov.className='kov'; ov.id='kov';
   ov.innerHTML=`<div class="khead"><div class="t"><b class="serif">${esc(s.title||'')}</b><small>${esc(s.version||'')} · 撳任何字可聽讀音或加入生字</small></div><span id="kvoice" class="ttsb ${has?'on':'off'}">${has?'✅ 已有真人發音':'⏳ 未有真人發音'}</span><button class="kx" onclick="closeKaraoke()">✕</button></div>
-   <div class="ktabs" id="ktabs">${[['read','🎤 跟讀 ＋ AI 分析'],['blind','🎧 盲聽'],['quiz','📝 盲聽測驗']].map(x=>`<button data-v="${x[0]}" onclick="setKView('${x[0]}')">${x[1]}</button>`).join('')}</div>
+   <div class="ktabs" id="ktabs">${[['read','🎤 播放及跟讀 ＋ AI 分析'],['blind','🎧 盲聽'],['quiz','📝 盲聽測驗']].map(x=>`<button data-v="${x[0]}" onclick="setKView('${x[0]}')">${x[1]}</button>`).join('')}</div>
    <div class="kprog"><i id="kbar"></i></div>
    <div class="kbody" id="kbody"><div class="inner" id="kinner"></div></div>
    <div class="kctl" id="kctl"></div>`;
@@ -1012,8 +1012,8 @@ function ttsLine(text){
   return `<div class="ttsl ${st===true?'on':'off'}" data-ti="${i}" data-est="${est}">${ttsLineInner(st,est)}</div>`;
 }
 function ttsLineInner(st,est){
-  return st===true?`<span>✅ <b>已有真人發音</b>，隨時可聽</span><button class="btn sm" onclick="playLine(this)">▶ 播放真人發音</button>`
-    :`<span>⏳ <b>未有真人發音</b>：撳「▶ 製作」約 ${est} 秒，只需製作一次，之後所有同學即刻聽到</span><button class="btn sm" onclick="playLine(this)">▶ 製作並播放</button>`;
+  return st===true?`<span>✅ <b>已有真人發音</b>，撳「🎤 播放及跟讀」即刻聽</span>`
+    :`<span>⏳ <b>未有真人發音</b>：第一次播放會自動製作（約 ${est} 秒），只需製作一次，之後所有同學即刻聽到</span>`;
 }
 async function playLine(btn){
   const box=btn.closest('.ttsl'), t=window._ttsT[+box.dataset.ti];
@@ -1507,7 +1507,7 @@ async function freeRead(p,f,u,k){
      <div class="row" style="margin-top:10px"><span class="lv lv7">5**</span><span class="muted" style="font-size:13px">${n} words · 約 ${Math.round(n/2.2)} 秒</span></div>
      <div class="script" style="margin-top:12px">${ww(text)}</div>${trBox(text)}${ttsLine(text)}
      <div class="fmodes">
-       <button class="fm" onclick="openKaraoke(window._fobj,'read')"><span class="fi">🎤</span><b>跟讀 ＋ AI 分析</b><small>跟住反白字讀，AI 分析發音、語調同咬字</small></button>
+       <button class="fm" onclick="openKaraoke(window._fobj,'read')"><span class="fi">🎤</span><b>播放及跟讀 ＋ AI 分析</b><small>聽真人示範，再跟住反白字讀，AI 分析發音、語調同咬字</small></button>
        <button class="fm" onclick="openKaraoke(window._fobj,'blind')"><span class="fi">🎧</span><b>盲聽</b><small>收埋原文，淨係用耳聽真人發音</small></button>
        <button class="fm" onclick="openKaraoke(window._fobj,'quiz')"><span class="fi">📝</span><b>盲聽測驗</b><small>邊聽邊填返漏咗的字，即時計分</small></button>
      </div>
