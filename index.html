@@ -344,6 +344,22 @@ label.q small{font-weight:400;color:var(--muted)}
 .bootw{min-height:70vh;display:grid;place-items:center}
 .clm{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
 .clm .mas{flex:none}
+/* 首頁「我要試下讀」大按鈕 */
+.trybtn{display:flex;align-items:center;gap:14px;margin:18px 0 6px;padding:14px 22px 14px 14px;border-radius:26px;text-decoration:none;color:#fff;
+  background:linear-gradient(135deg,#ff7a59 0%,#d9483b 55%,#b8336a 100%);box-shadow:0 10px 28px rgba(217,72,59,.35),inset 0 -4px 0 rgba(0,0,0,.12);
+  animation:tryPulse 2.4s ease-in-out infinite;position:relative;overflow:hidden;max-width:620px}
+.trybtn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 45%,transparent 60%);transform:translateX(-100%);animation:tryShine 3.2s ease-in-out infinite}
+.trybtn .tb-m{flex:none;background:#fff6e9;border-radius:50%;width:84px;height:84px;display:grid;place-items:center;box-shadow:0 0 0 4px rgba(255,255,255,.35)}
+.trybtn .tb-t{flex:1;min-width:0}
+.trybtn .tb-t b{display:block;font-size:clamp(24px,5.6vw,32px);line-height:1.15;letter-spacing:.02em}
+.trybtn .tb-t small{display:block;font-size:14.5px;opacity:.95;margin-top:4px}
+.trybtn .tb-go{flex:none;width:46px;height:46px;border-radius:50%;background:#fff;color:#d9483b;display:grid;place-items:center;font-size:24px;font-weight:700;animation:tryGo 1.2s ease-in-out infinite}
+.trybtn:active{transform:scale(.98)}
+@keyframes tryPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@keyframes tryShine{0%,55%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+@keyframes tryGo{50%{transform:translateX(5px)}}
+@media(max-width:560px){.trybtn{padding:12px 14px 12px 10px;gap:10px;border-radius:22px}.trybtn .tb-m{width:68px;height:68px}.trybtn .tb-m svg{width:60px;height:57px}.trybtn .tb-go{width:38px;height:38px;font-size:20px}.trybtn .tb-t small{font-size:12.5px}}
+@media (prefers-reduced-motion:reduce){.trybtn,.trybtn::after,.trybtn .tb-go{animation:none}}
 /* 隨意讀 */
 .fhero{display:flex;gap:22px;align-items:center}
 .fhero .fart{flex:none;width:200px}
@@ -724,6 +740,7 @@ function welcome(){
    :`<h2 class="serif" style="font-size:26px;margin:6px 0 4px">歡迎，${esc(PROFILE.name)}！</h2>
     <p class="muted" style="margin:0 0 12px">你的進度會自動儲存，下次用同一個學校帳戶登入就會自動載入。</p>
     <div class="wsteps"><div><b>①</b>揀題目，先寫低自己的想法</div><div><b>②</b>睇好用回應、萬用句子、Level 4 及 5** 講稿</div><div><b>③</b>跟讀錄音（最多 90 秒），AI 分析發音同語調</div></div>`}
+   <a class="trybtn" style="margin:14px 0 4px;text-align:left" href="#/free" onclick="this.closest('.wov').remove()"><span class="tb-m">${mascot({w:60})}</span><span class="tb-t"><b>我要試下讀 🎤</b><small>即刻讀 5** 範例 · 聽真人發音</small></span><span class="tb-go">➜</span></a>
    <button class="btn ${BOOT.returning&&last?'':'pri'}" style="width:100%;justify-content:center;margin-top:10px" onclick="this.closest('.wov').remove()">${BOOT.returning?'去題目首頁':'開始練習 →'}</button></div>`;
   ov.addEventListener('click',e=>{ if(e.target===ov) ov.remove(); });
   document.body.appendChild(ov);
@@ -758,13 +775,14 @@ function viewHome(){
   
   <section class="hero">
     <div class="h1 serif">Hi ${esc(PROFILE.name)}，今日練邊題？<br><span>Speak up, think deeper.</span></div>
+    <a class="trybtn" href="#/free"><span class="tb-m">${mascot({w:74})}</span><span class="tb-t"><b>我要試下讀 🎤</b><small>即刻讀 5** 範例 · 聽真人發音 · AI 幫你評分</small></span><span class="tb-go">➜</span></a>
     <div class="stats">
       <div class="stat"><b>${practised}</b><span>已練習題目 / ${total}</span></div>
       <div class="stat"><b>${DATA.vocab.length}</b><span>我的生字</span></div>
       <div class="stat"><b>${DATA.scripts.length}</b><span>我的講稿</span></div>
       <div class="stat"><b>${avg}</b><span>近 10 次跟讀平均分</span></div>
     </div>
-    <div class="row" style="margin-top:16px">${last?`<a class="btn acc" href="#/task/${last.id}">▶ 繼續：${esc(last.paper.label)} · ${esc(last.title||last.label)}</a>`:''}<a class="btn ${last?'':'acc'}" href="#/free">🎲 隨意讀：5** 範例 · 盲聽 · 盲聽測驗</a></div>
+    <div class="row" style="margin-top:16px">${last?`<a class="btn acc" href="#/task/${last.id}">▶ 繼續：${esc(last.paper.label)} · ${esc(last.title||last.label)}</a>`:''}</div>
     <div class="how">
       <div><b>① 讀題 · 自己諗</b><small>先寫低你的立場、理由同例子。</small></div>
       <div><b>② 睇範文</b><small>即時睇小組討論好用回應、萬用句子，同 Level 4 ／ 5** 個人回應講稿。</small></div>
